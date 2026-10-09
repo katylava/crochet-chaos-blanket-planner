@@ -94,6 +94,9 @@ class StitchEditDeleteTests(TestCase):
         response = self.client.get(reverse("stitch_list"))
 
         self.assertContains(response, f'src="{self.mine.photo.url}"')
+        self.assertContains(
+            response, f'<a href="{self.mine.photo.url}" target="_blank" rel="noopener">'
+        )
 
     def test_list_shows_placeholder_for_stitch_without_photo(self):
         response = self.client.get(reverse("stitch_list"))
@@ -152,6 +155,9 @@ class StitchDetailTests(TestCase):
         response = self.client.get(reverse("stitch_detail", args=[stitch.pk]))
 
         self.assertContains(response, "Photo by Jane, CC BY-SA 4.0")
+        self.assertContains(
+            response, f'<a href="{stitch.photo.url}" target="_blank" rel="noopener">'
+        )
         self.assertContains(response, 'href="https://example.com/photo"')
 
     def test_hides_photo_credit_without_photo(self):

@@ -3,7 +3,7 @@
 {% block content %}
 <h1>{{ stitch.name }}</h1>
 {% if stitch.photo %}
-  <a href="{{ stitch.photo.url }}"><img src="{{ stitch.photo.url }}" alt="{{ stitch.name }}" class="photo"></a>
+  <a href="{{ stitch.photo.url }}" target="_blank" rel="noopener"><img src="{{ stitch.photo.url }}" alt="{{ stitch.name }}" class="photo"></a>
   {% if stitch.photo_credit %}<p><small>{{ stitch.photo_credit|urlize }}</small></p>{% endif %}
 {% else %}
   {% include "stitches/_no_photo.html" with css_class="photo" %}

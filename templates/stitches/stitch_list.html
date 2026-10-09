@@ -7,7 +7,7 @@
   <tr><th>Photo</th><th>Name</th><th>Multiple</th><th>Edge stitches</th><th>Colors</th><th>Kind</th><th></th></tr>
   {% for stitch in stitches %}
   <tr>
-    <td>{% if stitch.photo %}<a href="{{ stitch.photo.url }}"><img src="{{ stitch.photo.url }}" alt="{{ stitch.name }}" class="thumb"></a>{% else %}{% include "stitches/_no_photo.html" with css_class="thumb" %}{% endif %}</td>
+    <td>{% if stitch.photo %}<a href="{{ stitch.photo.url }}" target="_blank" rel="noopener"><img src="{{ stitch.photo.url }}" alt="{{ stitch.name }}" class="thumb"></a>{% else %}{% include "stitches/_no_photo.html" with css_class="thumb" %}{% endif %}</td>
     <td><a href="{% url 'stitch_detail' stitch.pk %}">{{ stitch.name }}</a></td>
     <td>{{ stitch.multiple }}</td>
     <td>{{ stitch.edge_stitches }}</td>
