@@ -26,12 +26,12 @@
 
 <section>
   <h2>Stitches</h2>
-  <table>
+  <div class="table-scroll"><table>
     <tr><th>Stitch</th><th>Draws</th><th>Rows</th><th>Status</th><th></th></tr>
     {% for item in stitch_usage %}
     <tr><td>{{ item }}</td><td>{{ item.draw_count }}</td><td>{{ item.row_count }}</td><td>{{ item.active|yesno:"Active,Inactive" }}</td><td><form method="post" action="{% url 'project_stitch_toggle' item.pk %}" style="display:inline">{% csrf_token %}<button>{{ item.active|yesno:"Deactivate,Activate" }}</button></form>{% if not item.draw_count %} <form method="post" action="{% url 'project_stitch_remove' item.pk %}" style="display:inline">{% csrf_token %}<button>Remove</button></form>{% endif %}</td></tr>
     {% endfor %}
-  </table>
+  </table></div>
   <form method="post" action="{% url 'project_stitch_add' project.pk %}">
     {% csrf_token %}
     {{ add_stitch_form.stitch.label_tag }} {{ add_stitch_form.stitch }}
@@ -41,12 +41,12 @@
 
 <section>
   <h2>Colors</h2>
-  <table>
+  <div class="table-scroll"><table>
     <tr><th>Color</th><th>Draws</th><th>Rows</th><th>Status</th><th></th></tr>
     {% for item in color_usage %}
     <tr><td>{{ item }}</td><td>{{ item.draw_count }}</td><td>{{ item.row_count }}</td><td>{{ item.active|yesno:"Active,Inactive" }}</td><td><form method="post" action="{% url 'project_color_toggle' item.pk %}" style="display:inline">{% csrf_token %}<button>{{ item.active|yesno:"Deactivate,Activate" }}</button></form>{% if not item.draw_count %} <form method="post" action="{% url 'project_color_remove' item.pk %}" style="display:inline">{% csrf_token %}<button>Remove</button></form>{% endif %}</td></tr>
     {% endfor %}
-  </table>
+  </table></div>
   <form method="post" action="{% url 'project_color_add' project.pk %}">
     {% csrf_token %}
     {{ add_colors_form.as_p }}
@@ -57,7 +57,7 @@
 <section>
   <h2>Draws</h2>
   <form method="post" action="{% url 'draw_create' project.pk %}">{% csrf_token %}<button>Draw</button></form>
-  <table>
+  <div class="table-scroll"><table>
     <tr><th>#</th><th>Stitch</th><th>Colors</th><th>Rows</th><th>Padding</th><th></th></tr>
     {% for draw in draws %}
     <tr>
@@ -75,6 +75,6 @@
     {% empty %}
     <tr><td colspan="6">No draws yet.</td></tr>
     {% endfor %}
-  </table>
+  </table></div>
 </section>
 {% endblock %}

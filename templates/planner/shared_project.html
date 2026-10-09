@@ -11,14 +11,14 @@
 <ul>{% for color in colors %}<li>{{ color }}</li>{% endfor %}</ul>
 
 <h2>Draws</h2>
-<table>
+<div class="table-scroll"><table>
   <tr><th>#</th><th>Stitch</th><th>Colors</th><th>Rows</th></tr>
   {% for draw in draws %}
   <tr><td>{{ forloop.counter }}</td><td>{{ draw.stitch }}</td><td>{{ draw.colors_text }}</td><td>{{ draw.rows }}</td></tr>
   {% empty %}
   <tr><td colspan="4">No draws yet.</td></tr>
   {% endfor %}
-</table>
+</table></div>
 
 {% if photos %}
 <h2>Progress photos</h2>

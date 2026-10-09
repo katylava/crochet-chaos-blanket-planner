@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Stitches</h1>
 <p><a href="{% url 'stitch_create' %}">Add a private stitch</a></p>
-<table>
+<div class="table-scroll"><table>
   <tr><th>Name</th><th>Multiple</th><th>Edge stitches</th><th>Colors</th><th>Kind</th><th></th></tr>
   {% for stitch in stitches %}
   <tr>
@@ -22,5 +22,5 @@
   {% empty %}
   <tr><td colspan="6">No stitches yet.</td></tr>
   {% endfor %}
-</table>
+</table></div>
 {% endblock %}
