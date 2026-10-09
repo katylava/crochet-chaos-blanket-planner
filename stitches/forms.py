@@ -18,4 +18,4 @@ class PhotoFormMixin:
 class StitchForm(PhotoFormMixin, forms.ModelForm):
     class Meta:
         model = Stitch
-        fields = ["name", "multiple", "edge_stitches", "colors", "source", "photo"]
+        fields = ["name", "multiple", "edge_stitches", "colors", "instructions", "source", "photo"]

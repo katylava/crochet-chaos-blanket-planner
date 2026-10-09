@@ -28,6 +28,7 @@ class Stitch(models.Model):
         default=1,
         help_text="A two-color stitch needs two different colors per draw.",
     )
+    instructions = models.TextField(blank=True, help_text="How to work the stitch.")
     source = models.URLField(blank=True, help_text="The URL the stitch data came from.")
     photo = models.ImageField(upload_to="stitches/", blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

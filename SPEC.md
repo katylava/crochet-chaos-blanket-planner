@@ -51,6 +51,7 @@ private to avoid copyright infringement.
 | multiple      | yes      |         | `N` in "multiple of N + M": the number of stitches in one repeat.                            |
 | edge stitches | no       | 0       | `M` in "multiple of N + M", counting only stitches that appear in every row.                 |
 | colors        | no       | 1       | 1 or 2. A two-color stitch needs two different colors per draw.                              |
+| instructions  | no       |         | How to work the stitch, as plain text. Line breaks are kept when shown.                      |
 | source        | no       |         | The URL the stitch data came from.                                                           |
 | photo         | no       |         | An uploaded image of the stitch. See the photo storage rules below the table.                |
 

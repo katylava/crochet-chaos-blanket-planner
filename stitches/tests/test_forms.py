@@ -48,6 +48,22 @@ class StitchCreateTests(TestCase):
         self.assertEqual(Image.open(stitch.photo.path).size[0], 1200)
         self.assertTrue(stitch.photo.name.endswith(".jpg"))
 
+    def test_saves_instructions(self):
+        self.client.post(
+            reverse("stitch_create"),
+            {
+                "name": "Moss",
+                "multiple": 2,
+                "edge_stitches": 0,
+                "colors": 1,
+                "instructions": "Row 1: sc, ch 1, skip 1.\nRow 2: sc in ch-1 space.",
+            },
+        )
+
+        self.assertEqual(
+            Stitch.objects.get().instructions, "Row 1: sc, ch 1, skip 1.\nRow 2: sc in ch-1 space."
+        )
+
     def test_form_explains_turning_chains(self):
         response = self.client.get(reverse("stitch_create"))
 

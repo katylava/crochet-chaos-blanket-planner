@@ -8,7 +8,16 @@ from stitches.models import Stitch
 class StitchAdminForm(PhotoFormMixin, forms.ModelForm):
     class Meta:
         model = Stitch
-        fields = ["name", "multiple", "edge_stitches", "colors", "source", "photo", "is_public"]
+        fields = [
+            "name",
+            "multiple",
+            "edge_stitches",
+            "colors",
+            "instructions",
+            "source",
+            "photo",
+            "is_public",
+        ]
 
 
 @admin.register(Stitch)
