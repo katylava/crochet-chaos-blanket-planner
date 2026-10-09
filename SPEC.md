@@ -90,6 +90,10 @@ After development and before user feedback, the site owner fills the database
 with real stitches by researching them online and entering them through the
 admin site.
 
+The database will hold hundreds of public stitches. Every place that lists or
+chooses stitches must stay usable at that size: the stitch list has search and
+pages, and choosing stitches for a project uses a searchable list.
+
 ## Projects
 
 A project holds:

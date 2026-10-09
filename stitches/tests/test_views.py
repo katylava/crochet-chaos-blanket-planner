@@ -15,13 +15,48 @@ MEDIA_ROOT = tempfile.mkdtemp()
 
 
 class StitchListTests(TestCase):
+    def setUp(self):
+        self.alice = User.objects.create_user("alice")
+        self.client.force_login(self.alice)
+
+    def names(self, response):
+        return [s.name for s in response.context["page"]]
+
+    def test_searches_by_name(self):
+        Stitch.objects.create(name="Shell", multiple=6, owner=self.alice)
+        Stitch.objects.create(name="Moss", multiple=2, owner=self.alice)
+        Stitch.objects.create(name="Two-color moss", multiple=2, owner=self.alice)
+
+        response = self.client.get(reverse("stitch_list"), {"q": "moss"})
+
+        self.assertEqual(self.names(response), ["Moss", "Two-color moss"])
+        self.assertContains(response, 'value="moss"')
+
+    def test_filters_to_own_stitches(self):
+        owner = User.objects.create_user("owner")
+        Stitch.objects.create(name="Public", multiple=2, owner=owner, is_public=True)
+        Stitch.objects.create(name="Mine", multiple=2, owner=self.alice)
+
+        response = self.client.get(reverse("stitch_list"), {"mine": "1"})
+
+        self.assertEqual(self.names(response), ["Mine"])
+
+    def test_pages_fifty_at_a_time_and_keeps_search(self):
+        for i in range(51):
+            Stitch.objects.create(name=f"Stitch {i:02}", multiple=1, owner=self.alice)
+
+        first = self.client.get(reverse("stitch_list"), {"q": "stitch"})
+        second = self.client.get(reverse("stitch_list"), {"q": "stitch", "page": 2})
+
+        self.assertEqual(len(self.names(first)), 50)
+        self.assertEqual(self.names(second), ["Stitch 50"])
+        self.assertContains(first, "?q=stitch&page=2")
+
     def test_lists_public_and_own_stitches_only(self):
         owner = User.objects.create_user("owner")
-        alice = User.objects.create_user("alice")
         Stitch.objects.create(name="Public shell", multiple=6, owner=owner, is_public=True)
         Stitch.objects.create(name="Owner private", multiple=6, owner=owner)
-        Stitch.objects.create(name="Alice private", multiple=2, owner=alice)
-        self.client.force_login(alice)
+        Stitch.objects.create(name="Alice private", multiple=2, owner=self.alice)
 
         response = self.client.get(reverse("stitch_list"))
 
@@ -76,11 +111,14 @@ class StitchEditDeleteTests(TestCase):
         self.assertContains(response, "used in a project")
         self.assertTrue(Stitch.objects.filter(pk=self.mine.pk).exists())
 
-    def test_list_shows_edit_link_for_own_private_stitch_only(self):
-        response = self.client.get(reverse("stitch_list"))
-
+    def test_detail_shows_edit_and_delete_for_own_private_stitch_only(self):
+        response = self.client.get(reverse("stitch_detail", args=[self.mine.pk]))
         self.assertContains(response, reverse("stitch_edit", args=[self.mine.pk]))
+        self.assertContains(response, 'data-confirm="Delete Mine?"')
+
+        response = self.client.get(reverse("stitch_detail", args=[self.public.pk]))
         self.assertNotContains(response, reverse("stitch_edit", args=[self.public.pk]))
+        self.assertNotContains(response, reverse("stitch_delete", args=[self.public.pk]))
 
     def test_edit_page_shows_form(self):
         response = self.client.get(reverse("stitch_edit", args=[self.mine.pk]))

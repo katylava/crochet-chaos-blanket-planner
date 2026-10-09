@@ -3,25 +3,31 @@
 {% block content %}
 <h1>Stitches</h1>
 <p><a href="{% url 'stitch_create' %}">Add a private stitch</a></p>
-<div class="table-scroll"><table>
-  <tr><th>Photo</th><th>Name</th><th>Multiple</th><th>Edge stitches</th><th>Colors</th><th>Kind</th><th></th></tr>
-  {% for stitch in stitches %}
-  <tr>
-    <td>{% if stitch.photo %}<a href="{{ stitch.photo.url }}" target="_blank" rel="noopener"><img src="{{ stitch.photo.url }}" alt="{{ stitch.name }}" class="thumb"></a>{% else %}{% include "stitches/_no_photo.html" with css_class="thumb" %}{% endif %}</td>
-    <td><a href="{% url 'stitch_detail' stitch.pk %}">{{ stitch.name }}</a></td>
-    <td>{{ stitch.multiple }}</td>
-    <td>{{ stitch.edge_stitches }}</td>
-    <td>{{ stitch.colors }}</td>
-    <td>{{ stitch.is_public|yesno:"Public,Private" }}</td>
-    <td>
-      {% if not stitch.is_public and stitch.owner_id == user.id %}
-        <a href="{% url 'stitch_edit' stitch.pk %}">Edit</a>
-        <form method="post" action="{% url 'stitch_delete' stitch.pk %}" style="display:inline">{% csrf_token %}<button>Delete</button></form>
-      {% endif %}
-    </td>
-  </tr>
+<form method="get" class="inline-form" role="search">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search stitches" aria-label="Search stitches">
+  <label><input type="checkbox" name="mine" value="1"{% if mine %} checked{% endif %}> Only my private stitches</label>
+  <button>Search</button>
+</form>
+<ul class="stitch-list">
+  {% for stitch in page %}
+  <li>
+    {% if stitch.photo %}<a href="{{ stitch.photo.url }}" target="_blank" rel="noopener"><img src="{{ stitch.photo.url }}" alt="{{ stitch.name }}" class="thumb"></a>{% else %}{% include "stitches/_no_photo.html" with css_class="thumb" %}{% endif %}
+    <span>
+      <a href="{% url 'stitch_detail' stitch.pk %}"><strong>{{ stitch.name }}</strong></a><br>
+      <small>Multiple of {{ stitch.multiple }} + {{ stitch.edge_stitches }} · {{ stitch.colors }} color{{ stitch.colors|pluralize }} · {{ stitch.is_public|yesno:"Public,Private" }}</small>
+    </span>
+  </li>
   {% empty %}
-  <tr><td colspan="7">No stitches yet.</td></tr>
+  <li>No stitches found.</li>
   {% endfor %}
-</table></div>
+</ul>
+{% if page.has_other_pages %}
+<nav aria-label="Pages">
+  <ul>
+    {% if page.has_previous %}<li><a href="?{{ query }}&page={{ page.previous_page_number }}">Previous</a></li>{% endif %}
+    <li>Page {{ page.number }} of {{ page.paginator.num_pages }}</li>
+    {% if page.has_next %}<li><a href="?{{ query }}&page={{ page.next_page_number }}">Next</a></li>{% endif %}
+  </ul>
+</nav>
+{% endif %}
 {% endblock %}

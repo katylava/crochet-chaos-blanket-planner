@@ -21,6 +21,9 @@
   <p>No instructions yet.</p>
 {% endif %}
 {% if not stitch.is_public and stitch.owner_id == user.id %}
-  <p><a href="{% url 'stitch_edit' stitch.pk %}">Edit</a></p>
+  <p class="actions">
+    <a href="{% url 'stitch_edit' stitch.pk %}">Edit</a>
+    <form method="post" action="{% url 'stitch_delete' stitch.pk %}" data-confirm="Delete {{ stitch.name }}?">{% csrf_token %}<button class="link-button">Delete</button></form>
+  </p>
 {% endif %}
 {% endblock %}

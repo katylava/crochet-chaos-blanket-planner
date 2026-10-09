@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db.models import ProtectedError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
@@ -12,7 +13,21 @@ from stitches.models import Stitch
 @login_required
 def stitch_list(request):
     stitches = Stitch.objects.visible_to(request.user)
-    return render(request, "stitches/stitch_list.html", {"stitches": stitches})
+    q = request.GET.get("q", "").strip()
+    if q:
+        stitches = stitches.filter(name__icontains=q)
+    mine = request.GET.get("mine") == "1"
+    if mine:
+        stitches = stitches.filter(owner=request.user, is_public=False)
+    page = Paginator(stitches, 50).get_page(request.GET.get("page"))
+    # The query string without the page number, for the paging links.
+    params = request.GET.copy()
+    params.pop("page", None)
+    return render(
+        request,
+        "stitches/stitch_list.html",
+        {"page": page, "q": q, "mine": mine, "query": params.urlencode()},
+    )
 
 
 @login_required
