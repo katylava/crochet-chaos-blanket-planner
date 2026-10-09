@@ -1,7 +1,7 @@
 from django import forms
 
 from planner.models import Draw, Project
-from planner.rules import fit_errors
+from planner.rules import fit_errors, project_fit_errors
 from stitches.models import Stitch
 
 
@@ -25,6 +25,16 @@ class ProjectSettingsForm(forms.ModelForm):
         min_rows, max_rows = cleaned.get("min_rows"), cleaned.get("max_rows")
         if min_rows and max_rows and min_rows > max_rows:
             self.add_error("max_rows", "The maximum can't be less than the minimum.")
+        return cleaned
+
+
+class ProjectEditForm(ProjectSettingsForm):
+    def clean(self):
+        cleaned = super().clean()
+        n = cleaned.get("repeat_gap")
+        if n is not None:
+            for error in project_fit_errors(self.instance, n=n):
+                self.add_error(None, error)
         return cleaned
 
 
@@ -80,3 +90,22 @@ class DrawForm(forms.ModelForm):
             if stitch.stitch.colors == 1 and color2 is not None:
                 self.add_error("color2", f"{stitch} uses one color.")
         return cleaned
+
+
+class AddStitchForm(forms.Form):
+    stitch = forms.ModelChoiceField(queryset=Stitch.objects.none())
+
+    def __init__(self, *args, project, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["stitch"].queryset = Stitch.objects.visible_to(project.owner).exclude(
+            project_stitches__project=project
+        )
+
+
+class AddColorsForm(forms.Form):
+    colors = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 3}), help_text="One color name per line."
+    )
+
+    def clean_colors(self):
+        return parse_colors(self.cleaned_data["colors"])

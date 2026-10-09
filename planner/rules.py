@@ -31,6 +31,22 @@ def fit_errors(n, stitches, color_count):
     return errors
 
 
+def project_fit_errors(project, n=None, deactivating=None):
+    """Return fit errors for the project's active stitches and colors.
+
+    `n` overrides the project's N. `deactivating` is a ProjectStitch or
+    ProjectColor to count as inactive.
+    """
+    n = project.repeat_gap if n is None else n
+    stitches = [
+        ps.stitch
+        for ps in project.project_stitches.filter(active=True).select_related("stitch")
+        if ps != deactivating
+    ]
+    colors = [c for c in project.colors.filter(active=True) if c != deactivating]
+    return fit_errors(n, stitches, len(colors))
+
+
 def blocked(project, before=None):
     """Return (stitches, colors) used in the N draws before `before`, or the last N draws.
 
