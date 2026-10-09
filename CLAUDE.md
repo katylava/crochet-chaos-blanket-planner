@@ -8,6 +8,21 @@ truth for behavior. Read it before changing features.
 - When I add or change a requirement, update `SPEC.md` in the same commit as the
   code.
 - If the spec doesn't cover something, ask me. Don't fill the gap with a guess.
+- The spec can miss things users obviously need. When you notice a gap, raise it
+  with me instead of building only what's written.
+
+## UI
+
+- Write UI text in the words crocheters use, not the code's terms. If wording is
+  uncertain, propose options and agree on them with me before building.
+- Lay out each page around what the user is there to do. The information they
+  came for is the most prominent thing on the page. Actions get emphasis by how
+  often they're used, so rare actions stay quiet.
+- Design for real data volumes, not the seed data. The stitch database will hold
+  hundreds of public stitches, so every place that lists or chooses stitches
+  needs search or paging.
+- Passing tests isn't enough for UI work. Look at each changed page in a browser
+  at phone and desktop widths, the way a user would.
 
 ## Keeping this file current
 
