@@ -67,7 +67,7 @@ class SharingTests(TestCase):
         self.assertContains(response, "Shell")
         self.assertContains(response, "red")
         self.assertContains(response, "blue")
-        self.assertContains(response, "<td>3</td>", html=True)
+        self.assertContains(response, "red, 3 rows")
         self.assertContains(response, DiaryEntry.objects.get().photo.url)
         for hidden in ["secret diary text", "private notes", "example.com", "at the start", "Reroll"]:
             self.assertNotContains(response, hidden)

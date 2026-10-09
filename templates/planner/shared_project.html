@@ -11,14 +11,19 @@
 <ul>{% for color in colors %}<li>{% include "planner/_color_name.html" %}</li>{% endfor %}</ul>
 
 <h2>Draws</h2>
-<div class="table-scroll"><table>
-  <tr><th>#</th><th>Stitch</th><th>Colors</th><th>Rows</th></tr>
-  {% for draw in draws %}
-  <tr><td>{{ forloop.counter }}</td><td>{{ draw.stitch }}</td><td>{{ draw.colors_text }}</td><td>{{ draw.rows }}</td></tr>
+<ul class="draws">
+  {% for draw in draws reversed %}
+  <li>
+    <div class="draw-main">
+      <span class="draw-stitch">{{ draw.stitch }}</span>
+      <span class="draw-detail">{{ draw.colors_text }}, {{ draw.rows }} row{{ draw.rows|pluralize }}</span>
+    </div>
+    <div class="draw-meta"><span>Draw {{ forloop.revcounter }}</span></div>
+  </li>
   {% empty %}
-  <tr><td colspan="4">No draws yet.</td></tr>
+  <li>No draws yet.</li>
   {% endfor %}
-</table></div>
+</ul>
 
 {% if photos %}
 <h2>Progress photos</h2>

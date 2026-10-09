@@ -217,6 +217,15 @@ class ProjectDetailTests(TestCase):
         self.assertLess(history.index("Draw 2"), history.index("Draw 1"))
         self.assertNotIn("Draw 3", history)
 
+    def test_history_rows_lead_with_stitch_colors_and_rows(self):
+        add_draw(self.project, "Moss", "blue", "red", rows=2)
+
+        history = self.section(self.get(), "history")
+
+        self.assertLess(history.index("Shell"), history.index("red, 3 rows"))
+        self.assertLess(history.index("red, 3 rows"), history.index("Draw 1"))
+        self.assertLess(history.index("Draw 1"), history.index("Padding"))
+
     def test_links_draw_actions(self):
         response = self.get()
 

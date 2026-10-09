@@ -25,8 +25,12 @@
       box-shadow: none; cursor: pointer;
     }
     .draws { list-style: none; padding: 0; }
-    .draws li { list-style: none; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1rem;
-      padding: 0.5rem 0; border-bottom: 1px solid var(--pico-muted-border-color); }
+    .draws li { list-style: none; padding: 0.75rem 0; border-bottom: 1px solid var(--pico-muted-border-color); }
+    .draw-main { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.75rem; }
+    .draw-stitch { font-size: 1.25rem; font-weight: 700; text-decoration: none; }
+    .draw-detail { font-size: 1.125rem; }
+    .draw-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 1rem;
+      font-size: 0.875rem; color: var(--pico-muted-color); }
     .inactive { color: var(--pico-muted-color); }
     .inline-form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: start; }
     .inline-form > select, .inline-form > input { flex: 1 1 12rem; margin-bottom: 0; }
