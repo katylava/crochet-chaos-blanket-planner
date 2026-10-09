@@ -1,6 +1,6 @@
 from django import forms
 
-from planner.models import DiaryEntry, Draw, Project
+from planner.models import DiaryEntry, Draw, Project, ProjectColor
 from planner.rules import fit_errors, project_fit_errors
 from stitches.forms import PhotoFormMixin
 from stitches.models import Stitch
@@ -104,13 +104,19 @@ class AddStitchForm(forms.Form):
         )
 
 
-class AddColorsForm(forms.Form):
-    colors = forms.CharField(
-        widget=forms.Textarea(attrs={"rows": 3}), help_text="One color name per line."
-    )
+class ColorForm(forms.ModelForm):
+    """Add or edit one of a project's colors. Pass an instance with its project set."""
 
-    def clean_colors(self):
-        return parse_colors(self.cleaned_data["colors"])
+    class Meta:
+        model = ProjectColor
+        fields = ["name", "yarn_url"]
+
+    def clean_name(self):
+        name = self.cleaned_data["name"].strip()
+        others = self.instance.project.colors.exclude(pk=self.instance.pk)
+        if others.filter(name=name).exists():
+            raise forms.ValidationError(f"This project already has a color named {name}.")
+        return name
 
 
 class DiaryEntryForm(PhotoFormMixin, forms.ModelForm):

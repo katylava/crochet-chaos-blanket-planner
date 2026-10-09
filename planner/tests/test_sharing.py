@@ -72,6 +72,15 @@ class SharingTests(TestCase):
         for hidden in ["secret diary text", "private notes", "example.com", "at the start", "Reroll"]:
             self.assertNotContains(response, hidden)
 
+    def test_shared_page_links_colors_to_yarn(self):
+        self.project.colors.filter(name="red").update(yarn_url="https://example.com/red")
+        url = self.share()
+        self.client.logout()
+
+        response = self.client.get(url)
+
+        self.assertContains(response, 'href="https://example.com/red"')
+
     def test_project_page_shows_share_link_when_shared(self):
         url = self.share()
 

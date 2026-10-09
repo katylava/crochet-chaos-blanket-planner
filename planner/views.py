@@ -6,8 +6,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from planner.forms import (
-    AddColorsForm,
     AddStitchForm,
+    ColorForm,
     DiaryEntryForm,
     DrawForm,
     ProjectCreateForm,
@@ -78,7 +78,7 @@ def project_detail(request, pk):
             "stitch_usage": project.stitch_usage(),
             "color_usage": project.color_usage(),
             "add_stitch_form": AddStitchForm(project=project),
-            "add_colors_form": AddColorsForm(),
+            "color_form": ColorForm(instance=ProjectColor(project=project)),
         },
     )
 
@@ -180,13 +180,28 @@ def project_stitch_add(request, pk):
 @require_POST
 def project_color_add(request, pk):
     project = own_project(request, pk)
-    form = AddColorsForm(request.POST)
+    form = ColorForm(request.POST, instance=ProjectColor(project=project))
     if form.is_valid():
-        for name in form.cleaned_data["colors"]:
-            ProjectColor.objects.get_or_create(project=project, name=name)
+        form.save()
     else:
         report_form_errors(request, form)
     return redirect("project_detail", project.pk)
+
+
+@login_required
+def project_color_edit(request, pk):
+    color = get_object_or_404(ProjectColor, pk=pk, project__owner=request.user)
+    form = ColorForm(request.POST or None, instance=color)
+    if form.is_valid():
+        form.save()
+        return redirect("project_detail", color.project_id)
+    # Show the saved name in the heading even when the form has an invalid new one.
+    saved_name = ProjectColor.objects.get(pk=color.pk).name
+    return render(
+        request,
+        "planner/color_form.html",
+        {"form": form, "color": color, "saved_name": saved_name},
+    )
 
 
 def remove_item(request, item):

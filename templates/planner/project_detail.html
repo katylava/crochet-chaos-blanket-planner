@@ -44,13 +44,13 @@
   <div class="table-scroll"><table>
     <tr><th>Color</th><th>Draws</th><th>Status</th><th></th></tr>
     {% for item in color_usage %}
-    <tr><td>{{ item }}</td><td>{{ item.draw_count }}</td><td>{{ item.active|yesno:"Active,Inactive" }}</td><td><form method="post" action="{% url 'project_color_toggle' item.pk %}" style="display:inline">{% csrf_token %}<button>{{ item.active|yesno:"Deactivate,Activate" }}</button></form>{% if not item.draw_count %} <form method="post" action="{% url 'project_color_remove' item.pk %}" style="display:inline">{% csrf_token %}<button>Remove</button></form>{% endif %}</td></tr>
+    <tr><td>{% include "planner/_color_name.html" with color=item %} <a href="{% url 'project_color_edit' item.pk %}"><small>Edit</small></a></td><td>{{ item.draw_count }}</td><td>{{ item.active|yesno:"Active,Inactive" }}</td><td><form method="post" action="{% url 'project_color_toggle' item.pk %}" style="display:inline">{% csrf_token %}<button>{{ item.active|yesno:"Deactivate,Activate" }}</button></form>{% if not item.draw_count %} <form method="post" action="{% url 'project_color_remove' item.pk %}" style="display:inline">{% csrf_token %}<button>Remove</button></form>{% endif %}</td></tr>
     {% endfor %}
   </table></div>
   <form method="post" action="{% url 'project_color_add' project.pk %}">
     {% csrf_token %}
-    {{ add_colors_form.as_p }}
-    <button>Add colors</button>
+    {{ color_form.as_p }}
+    <button>Add color</button>
   </form>
 </section>
 

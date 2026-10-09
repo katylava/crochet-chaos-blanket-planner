@@ -18,6 +18,7 @@ urlpatterns = [
         views.project_stitch_remove,
         name="project_stitch_remove",
     ),
+    path("project-colors/<int:pk>/edit/", views.project_color_edit, name="project_color_edit"),
     path(
         "project-colors/<int:pk>/remove/", views.project_color_remove, name="project_color_remove"
     ),

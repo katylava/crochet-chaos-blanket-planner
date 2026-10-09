@@ -124,7 +124,10 @@ class ProjectDetailTests(TestCase):
         self.assertContains(
             response, f'<td><a href="{shell_url}">Shell</a></td><td>1</td>', html=True
         )
-        self.assertContains(response, "<td>red</td><td>1</td>", html=True)
+        red_edit = reverse("project_color_edit", args=[self.project.colors.get(name="red").pk])
+        self.assertContains(
+            response, f'<td>red <a href="{red_edit}"><small>Edit</small></a></td><td>1</td>', html=True
+        )
 
     def test_links_draw_actions(self):
         response = self.get()

@@ -96,7 +96,8 @@ A project holds:
 
 - a name
 - the stitches chosen from the database
-- the colors chosen by the user, entered as names (for example "rust", "cream")
+- the colors chosen by the user, entered as names (for example "rust", "cream"),
+  each with an optional link to the yarn's product page
 - the stitch count per row, entered by the user
 - notes: optional free text about the project. The form's help text suggests
   recording the hook size, so the crocheter doesn't forget which hook they used.
@@ -109,6 +110,13 @@ crocheter decides how a drawn row count applies to a stitch whose motif spans
 several rows.
 
 All yarn is assumed to be weight 4 (worsted) in the MVP.
+
+### Editing colors
+
+The user can change a color's name or yarn link at any time, for example to fix
+a typo mid-project. Draws that use the color keep it under the new name. Two
+colors in one project can't share a name. Wherever colors are listed, a color
+with a yarn link links to it.
 
 ### Deactivating stitches and colors
 
@@ -148,7 +156,7 @@ The shared page is read-only and shows only:
 - the project name and stitch count per row
 - stitch names, with no other stitch data and no stitch photos. Private stitches
   hold data copied from other websites, so only their names are public.
-- the colors
+- the colors, with their yarn links
 - the draw history, as a simple list of each draw's stitch, colors, and row
   count, without padding or the owner's controls
 - the progress photos from the diary, without the diary text

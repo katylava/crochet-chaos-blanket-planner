@@ -87,6 +87,9 @@ class ProjectStitch(models.Model):
 class ProjectColor(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="colors")
     name = models.CharField(max_length=100)
+    yarn_url = models.URLField(
+        "yarn link", blank=True, help_text="Optional link to the yarn's product page."
+    )
     active = models.BooleanField(default=True)
 
     class Meta:

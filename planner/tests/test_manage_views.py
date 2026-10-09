@@ -99,20 +99,27 @@ class AddRemoveTests(ManageTestCase):
         self.assertContains(response, "Select a valid choice")
         self.assertEqual(self.project.project_stitches.count(), 3)
 
-    def test_adds_colors(self):
+    def test_adds_color_with_yarn_link(self):
         response = self.client.post(
-            reverse("project_color_add", args=[self.project.pk]), {"colors": "green\nred\n"}
+            reverse("project_color_add", args=[self.project.pk]),
+            {"name": "green", "yarn_url": "https://example.com/yarn/green"},
         )
 
         self.assertRedirects(response, self.detail)
-        self.assertEqual(
-            sorted(str(c) for c in self.project.colors.all()), ["blue", "cream", "green", "red"]
+        self.assertEqual(self.color("green").yarn_url, "https://example.com/yarn/green")
+
+    def test_rejects_duplicate_color_name(self):
+        response = self.client.post(
+            reverse("project_color_add", args=[self.project.pk]), {"name": "red"}, follow=True
         )
+
+        self.assertContains(response, "This project already has a color named red.")
+        self.assertEqual(self.project.colors.filter(name="red").count(), 1)
 
     def test_removes_unused_stitch_and_color(self):
         self.client.post(reverse("project_stitch_add", args=[self.project.pk]),
                          {"stitch": Stitch.objects.create(name="D", multiple=1, owner=self.alice).pk})
-        self.client.post(reverse("project_color_add", args=[self.project.pk]), {"colors": "green"})
+        self.client.post(reverse("project_color_add", args=[self.project.pk]), {"name": "green"})
 
         self.client.post(reverse("project_stitch_remove", args=[self.stitch("D").pk]))
         response = self.client.post(reverse("project_color_remove", args=[self.color("green").pk]))
@@ -125,7 +132,7 @@ class AddRemoveTests(ManageTestCase):
         add_draw(self.project, "A", "red")
         self.client.post(reverse("project_stitch_add", args=[self.project.pk]),
                          {"stitch": Stitch.objects.create(name="D", multiple=1, owner=self.alice).pk})
-        self.client.post(reverse("project_color_add", args=[self.project.pk]), {"colors": "green"})
+        self.client.post(reverse("project_color_add", args=[self.project.pk]), {"name": "green"})
 
         response = self.client.post(
             reverse("project_stitch_remove", args=[self.stitch("A").pk]), follow=True
@@ -156,9 +163,56 @@ class AddRemoveTests(ManageTestCase):
 
         self.assertFalse(self.project.project_stitches.filter(stitch__name="A").exists())
 
-    def test_add_colors_requires_text(self):
+    def test_add_color_requires_name(self):
         response = self.client.post(
-            reverse("project_color_add", args=[self.project.pk]), {"colors": ""}, follow=True
+            reverse("project_color_add", args=[self.project.pk]), {"name": ""}, follow=True
         )
 
         self.assertContains(response, "This field is required.")
+
+
+class ColorEditTests(ManageTestCase):
+    def test_renames_color_and_keeps_draws(self):
+        draw = add_draw(self.project, "A", "red")
+        url = reverse("project_color_edit", args=[self.color("red").pk])
+
+        response = self.client.post(url, {"name": "brick", "yarn_url": "https://example.com/b"})
+
+        self.assertRedirects(response, self.detail)
+        draw.refresh_from_db()
+        self.assertEqual(str(draw.color1), "brick")
+        self.assertEqual(draw.color1.yarn_url, "https://example.com/b")
+
+    def test_rejects_rename_to_existing_name(self):
+        url = reverse("project_color_edit", args=[self.color("red").pk])
+
+        response = self.client.post(url, {"name": "blue"})
+
+        self.assertContains(response, "This project already has a color named blue.")
+
+    def test_keeping_the_same_name_is_allowed(self):
+        url = reverse("project_color_edit", args=[self.color("red").pk])
+
+        response = self.client.post(url, {"name": "red", "yarn_url": "https://example.com/r"})
+
+        self.assertRedirects(response, self.detail)
+
+    def test_edit_page_shows_form(self):
+        response = self.client.get(reverse("project_color_edit", args=[self.color("red").pk]))
+
+        self.assertContains(response, "Edit color red")
+
+    def test_other_users_cannot_edit(self):
+        self.client.force_login(User.objects.create_user("bob"))
+
+        response = self.client.get(reverse("project_color_edit", args=[self.color("red").pk]))
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_project_page_links_color_to_yarn_and_edit(self):
+        self.project.colors.filter(name="red").update(yarn_url="https://example.com/r")
+
+        response = self.client.get(self.detail)
+
+        self.assertContains(response, 'href="https://example.com/r"')
+        self.assertContains(response, reverse("project_color_edit", args=[self.color("red").pk]))
