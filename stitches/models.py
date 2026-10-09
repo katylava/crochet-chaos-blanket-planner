@@ -11,10 +11,24 @@ class StitchQuerySet(models.QuerySet):
 
 class Stitch(models.Model):
     name = models.CharField(max_length=200)
-    multiple = models.PositiveIntegerField(validators=[MinValueValidator(1)])
-    edge_stitches = models.PositiveIntegerField(default=0)
-    colors = models.PositiveSmallIntegerField(choices=[(1, "1"), (2, "2")], default=1)
-    source = models.URLField(blank=True)
+    multiple = models.PositiveIntegerField(
+        validators=[MinValueValidator(1)],
+        help_text='N in "multiple of N + M": the number of stitches in one repeat.',
+    )
+    edge_stitches = models.PositiveIntegerField(
+        default=0,
+        help_text=(
+            'M in "multiple of N + M". Enter only the extra stitches that appear in every row. '
+            "Turning chains never count as stitches here, so if the pattern's M includes a "
+            "turning chain, leave it out."
+        ),
+    )
+    colors = models.PositiveSmallIntegerField(
+        choices=[(1, "1"), (2, "2")],
+        default=1,
+        help_text="A two-color stitch needs two different colors per draw.",
+    )
+    source = models.URLField(blank=True, help_text="The URL the stitch data came from.")
     photo = models.ImageField(upload_to="stitches/", blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     is_public = models.BooleanField(default=False)
