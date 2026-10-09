@@ -4,6 +4,7 @@ from planner.models import DiaryEntry, Draw, Project
 from planner.rules import fit_errors, project_fit_errors
 from stitches.forms import PhotoFormMixin
 from stitches.models import Stitch
+from stitches.widgets import NumericInputsMixin
 
 
 def parse_colors(text):
@@ -16,7 +17,7 @@ def parse_colors(text):
     return names
 
 
-class ProjectSettingsForm(forms.ModelForm):
+class ProjectSettingsForm(NumericInputsMixin, forms.ModelForm):
     class Meta:
         model = Project
         fields = ["name", "stitch_count", "notes", "min_rows", "max_rows", "repeat_gap"]
@@ -66,7 +67,7 @@ class ProjectCreateForm(ProjectSettingsForm):
         return cleaned
 
 
-class DrawForm(forms.ModelForm):
+class DrawForm(NumericInputsMixin, forms.ModelForm):
     """Manual edits. These aren't checked against the repeat rule."""
 
     class Meta:

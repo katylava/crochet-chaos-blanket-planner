@@ -3,9 +3,10 @@ from django.contrib import admin
 
 from stitches.forms import PhotoFormMixin
 from stitches.models import Stitch
+from stitches.widgets import NumericInputsMixin
 
 
-class StitchAdminForm(PhotoFormMixin, forms.ModelForm):
+class StitchAdminForm(NumericInputsMixin, PhotoFormMixin, forms.ModelForm):
     class Meta:
         model = Stitch
         fields = [

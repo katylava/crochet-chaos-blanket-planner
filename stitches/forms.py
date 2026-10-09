@@ -3,6 +3,7 @@ from django.core.files.uploadedfile import UploadedFile
 
 from stitches.models import Stitch
 from stitches.photos import clean_photo
+from stitches.widgets import NumericInputsMixin
 
 
 class PhotoFormMixin:
@@ -15,7 +16,7 @@ class PhotoFormMixin:
         return photo
 
 
-class StitchForm(PhotoFormMixin, forms.ModelForm):
+class StitchForm(NumericInputsMixin, PhotoFormMixin, forms.ModelForm):
     class Meta:
         model = Stitch
         fields = [
