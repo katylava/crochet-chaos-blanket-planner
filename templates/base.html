@@ -7,9 +7,25 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.0.6/css/pico.classless.min.css">
   <script src="{% static 'app.js' %}" defer></script>
   <style>
-    /* Small buttons for the inline forms in table rows and the nav. */
-    td form, nav form { display: inline; margin: 0; }
-    td button, nav button { padding: 0.2rem 0.6rem; margin: 0 0.25rem 0 0; font-size: 0.875rem; width: auto; }
+    nav form { display: inline; margin: 0; }
+    nav button { padding: 0.2rem 0.6rem; margin: 0; font-size: 0.875rem; width: auto; }
+    /* Rare or secondary actions look like small links, not buttons. */
+    .actions, .inactive li { font-size: 0.875rem; }
+    .actions form, .inactive form { display: inline; margin: 0; }
+    .actions > a, .actions > form, .inactive li > a, .inactive li > form { margin: 0 0.75rem 0 0; }
+    #latest-draw { margin-top: 1rem; }
+    button.link-button {
+      background: none; border: none; padding: 0; margin: 0; width: auto;
+      color: var(--pico-primary); font-size: inherit; text-decoration: underline;
+      box-shadow: none; cursor: pointer;
+    }
+    .draws { list-style: none; padding: 0; }
+    .draws li { list-style: none; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1rem;
+      padding: 0.5rem 0; border-bottom: 1px solid var(--pico-muted-border-color); }
+    .inactive { color: var(--pico-muted-color); }
+    .inline-form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: start; }
+    .inline-form > select, .inline-form > input { flex: 1 1 12rem; margin-bottom: 0; }
+    .inline-form > button { width: auto; margin-bottom: 0; }
     /* Wide tables scroll sideways on phones instead of widening the page. */
     .table-scroll { overflow-x: auto; }
     .thumb { width: 80px; height: 80px; object-fit: cover; border-radius: var(--pico-border-radius); }

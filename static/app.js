@@ -13,3 +13,9 @@ document.addEventListener("click", (event) => {
   document.getElementById(`${prefix}-rows`).insertAdjacentHTML("beforeend", row);
   total.value = Number(total.value) + 1;
 });
+
+// Forms with data-confirm ask before submitting, for actions that delete or replace data.
+document.addEventListener("submit", (event) => {
+  const message = event.target.dataset.confirm;
+  if (message && !window.confirm(message)) event.preventDefault();
+});

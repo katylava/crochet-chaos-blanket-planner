@@ -113,7 +113,9 @@ class DrawForm(NumericInputsMixin, forms.ModelForm):
 
 
 class AddStitchForm(forms.Form):
-    stitch = forms.ModelChoiceField(queryset=Stitch.objects.none())
+    stitch = forms.ModelChoiceField(
+        queryset=Stitch.objects.none(), empty_label="Choose a stitch to add"
+    )
 
     def __init__(self, *args, project, **kwargs):
         super().__init__(*args, **kwargs)
@@ -128,6 +130,10 @@ class ColorForm(forms.ModelForm):
     class Meta:
         model = ProjectColor
         fields = ["name", "yarn_url"]
+        widgets = {
+            "name": forms.TextInput(attrs={"placeholder": "Color name, like rust"}),
+            "yarn_url": forms.URLInput(attrs={"placeholder": "Yarn link (optional)"}),
+        }
 
     def clean_name(self):
         name = self.cleaned_data["name"].strip()

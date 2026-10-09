@@ -10,19 +10,20 @@ class DrawError(Exception):
 
 
 def fit_errors(n, stitches, color_count):
-    """Return messages saying why N doesn't fit the active stitches and colors."""
+    """Return messages saying why N, the draws before a repeat, doesn't fit."""
     errors = []
     if len(stitches) <= n:
         errors.append(
-            f"Too few stitches: with N = {n}, the project needs at least {n + 1} active stitches."
+            f"Too few stitches: with {n} draws before a repeat, "
+            f"the project needs at least {n + 1} active stitches."
         )
     if any(stitch.colors == 2 for stitch in stitches):
         # The last N draws can block up to 2N colors, and the next draw can need 2 more.
         colors_needed = 2 * n + 2
-        condition = f"N = {n} and a two-color stitch"
+        condition = f"{n} draws before a repeat and a two-color stitch"
     else:
         colors_needed = n + 1
-        condition = f"N = {n}"
+        condition = f"{n} draws before a repeat"
     if color_count < colors_needed:
         errors.append(
             f"Too few colors: with {condition}, "

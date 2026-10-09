@@ -21,6 +21,9 @@ truth for behavior. Read it before changing features.
 - No JavaScript frontend framework. Plain JavaScript is fine where it helps. It
   lives in `static/app.js`, loaded by `templates/base.html`. Keep pages usable
   without it: forms still submit and links still work.
+- Actions that delete or replace data put a `data-confirm="..."` message on their
+  form, and `static/app.js` asks before submitting. Rare actions use
+  `class="link-button"` so they don't look like main buttons.
 - Styling is Pico's classless stylesheet from the jsdelivr CDN, pinned to an
   exact version in `templates/base.html`, plus a small `<style>` block there.
   Keep the UI basic, but not unstyled.

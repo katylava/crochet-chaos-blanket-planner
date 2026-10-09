@@ -249,7 +249,9 @@ every stitch.
 
 ### Draw history
 
-The project lists its draws in order. For any draw, the user can:
+The project page shows the latest draw first and highlighted, since it's the
+one to crochet next, followed by earlier draws, newest first. For any draw, the
+user can:
 
 - **Delete it:** for draws the user rejected.
 - **Edit it:** change the stitch, colors, or row count by hand, for when the

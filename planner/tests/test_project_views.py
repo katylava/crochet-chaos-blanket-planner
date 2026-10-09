@@ -139,25 +139,98 @@ class ProjectDetailTests(TestCase):
     def get(self):
         return self.client.get(reverse("project_detail", args=[self.project.pk]))
 
-    def test_shows_settings_and_usage(self):
+    def section(self, response, element_id):
+        """Return the HTML of the element with this id, up to its closing tag."""
+        html = response.content.decode()
+        start = html.index(f'id="{element_id}"')
+        tag = html.rindex("<", 0, start)
+        name = html[tag + 1 : start].split()[0]
+        return html[tag : html.index(f"</{name}>", start)]
+
+    def test_shows_settings_in_plain_words(self):
+        self.project.repeat_gap = 2
+        self.project.save()
+
         response = self.get()
 
         self.assertContains(response, "5 mm hook")
         self.assertContains(response, "150 stitches per row")
-        shell_url = reverse("stitch_detail", args=[self.draw.stitch.stitch_id])
-        self.assertContains(
-            response, f'<td><a href="{shell_url}">Shell</a></td><td>1</td>', html=True
-        )
-        red_edit = reverse("project_color_edit", args=[self.project.colors.get(name="red").pk])
-        self.assertContains(
-            response, f'<td>red <a href="{red_edit}"><small>Edit</small></a></td><td>1</td>', html=True
-        )
+        self.assertContains(response, "1 to 4 rows per draw")
+        self.assertContains(response, "No stitch or color repeats within 2 draws")
+        self.assertNotContains(response, "N =")
+
+    def test_zero_gap_says_repeats_are_allowed(self):
+        response = self.get()
+
+        self.assertContains(response, "Stitches and colors can repeat in back-to-back draws")
+
+    def test_draw_button_comes_before_stitch_and_color_management(self):
+        html = self.get().content.decode()
+
+        self.assertLess(html.index(">Draw</button>"), html.index('id="active-stitches"'))
+        self.assertLess(html.index(">Draw</button>"), html.index('id="active-colors"'))
+
+    def test_highlights_latest_draw(self):
+        add_draw(self.project, "Moss", "blue", "red", rows=2)
+
+        latest = self.section(self.get(), "latest-draw")
+
+        self.assertIn("Draw 2", latest)
+        self.assertIn("Moss", latest)
+        self.assertIn("blue and red", latest)
+
+    def test_history_lists_earlier_draws_newest_first(self):
+        add_draw(self.project, "Moss", "blue", "red", rows=2)
+        add_draw(self.project, "Shell", "blue", rows=2)
+
+        history = self.section(self.get(), "history")
+
+        self.assertLess(history.index("Draw 2"), history.index("Draw 1"))
+        self.assertNotIn("Draw 3", history)
 
     def test_links_draw_actions(self):
         response = self.get()
 
         for name in ["draw_edit", "draw_delete", "draw_reroll"]:
             self.assertContains(response, reverse(name, args=[self.draw.pk]))
+
+    def test_destructive_actions_ask_for_confirmation(self):
+        latest = add_draw(self.project, "Moss", "blue", "red", rows=2)
+
+        response = self.get()
+
+        self.assertContains(response, 'data-confirm="Delete draw 2?"')
+        self.assertContains(response, 'data-confirm="Reroll draw 1?')
+        self.assertNotContains(response, 'data-confirm="Reroll draw 2?')
+        self.assertContains(response, reverse("draw_reroll", args=[latest.pk]))
+
+    def test_remove_asks_for_confirmation(self):
+        self.project.colors.create(name="unused")
+
+        response = self.get()
+
+        self.assertContains(response, 'data-confirm="Remove unused from this project?"')
+
+    def test_tables_show_active_items_with_draw_counts(self):
+        response = self.get()
+
+        stitches = self.section(response, "active-stitches")
+        shell_url = reverse("stitch_detail", args=[self.draw.stitch.stitch_id])
+        self.assertInHTML(f'<td><a href="{shell_url}">Shell</a></td><td>1</td>', stitches)
+        colors = self.section(response, "active-colors")
+        self.assertIn("red", colors)
+        self.assertNotIn("Status", stitches + colors)
+
+    def test_inactive_items_are_listed_separately(self):
+        self.project.project_stitches.filter(stitch__name="Moss").update(active=False)
+        self.project.colors.filter(name="blue").update(active=False)
+
+        response = self.get()
+
+        self.assertNotIn("Moss", self.section(response, "active-stitches"))
+        self.assertIn("Moss", self.section(response, "inactive-stitches"))
+        self.assertNotIn("blue", self.section(response, "active-colors"))
+        self.assertIn("blue", self.section(response, "inactive-colors"))
 
     def test_project_list_links_to_project_and_new_project(self):
         response = self.client.get(reverse("project_list"))

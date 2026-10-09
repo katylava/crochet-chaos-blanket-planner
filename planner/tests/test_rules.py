@@ -12,7 +12,7 @@ class FitErrorsTests(SimpleTestCase):
         errors = fit_errors(n=2, stitches=[ONE_COLOR, ONE_COLOR], color_count=10)
 
         self.assertEqual(
-            errors, ["Too few stitches: with N = 2, the project needs at least 3 active stitches."]
+            errors, ["Too few stitches: with 2 draws before a repeat, the project needs at least 3 active stitches."]
         )
 
     def test_one_color_stitches_need_n_plus_one_colors(self):
@@ -21,7 +21,7 @@ class FitErrorsTests(SimpleTestCase):
         self.assertEqual(fit_errors(n=2, stitches=stitches, color_count=3), [])
         self.assertEqual(
             fit_errors(n=2, stitches=stitches, color_count=2),
-            ["Too few colors: with N = 2, the project needs at least 3 active colors."],
+            ["Too few colors: with 2 draws before a repeat, the project needs at least 3 active colors."],
         )
 
     def test_two_color_stitch_needs_2n_plus_2_colors(self):
@@ -31,7 +31,7 @@ class FitErrorsTests(SimpleTestCase):
         self.assertEqual(
             fit_errors(n=2, stitches=stitches, color_count=5),
             [
-                "Too few colors: with N = 2 and a two-color stitch, "
+                "Too few colors: with 2 draws before a repeat and a two-color stitch, "
                 "the project needs at least 6 active colors."
             ],
         )

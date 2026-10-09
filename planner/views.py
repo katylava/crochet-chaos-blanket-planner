@@ -72,15 +72,22 @@ def project_edit(request, pk):
 @login_required
 def project_detail(request, pk):
     project = own_project(request, pk)
-    draws = project.draws.select_related("stitch__stitch", "color1", "color2")
+    draws = list(project.draws.select_related("stitch__stitch", "color1", "color2"))
+    for number, draw in enumerate(draws, start=1):
+        draw.number = number
+    stitches = project.stitch_usage()
+    colors = project.color_usage()
     return render(
         request,
         "planner/project_detail.html",
         {
             "project": project,
-            "draws": draws,
-            "stitch_usage": project.stitch_usage(),
-            "color_usage": project.color_usage(),
+            "latest": draws[-1] if draws else None,
+            "history": draws[-2::-1],
+            "active_stitches": [s for s in stitches if s.active],
+            "inactive_stitches": [s for s in stitches if not s.active],
+            "active_colors": [c for c in colors if c.active],
+            "inactive_colors": [c for c in colors if not c.active],
             "add_stitch_form": AddStitchForm(project=project),
             "color_form": ColorForm(instance=ProjectColor(project=project)),
         },
