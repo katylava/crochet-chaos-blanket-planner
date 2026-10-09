@@ -20,6 +20,20 @@ class ProjectListTests(TestCase):
         self.assertContains(response, "Alice&#x27;s blanket")
         self.assertNotContains(response, "Bob&#x27;s blanket")
 
+    def test_shows_draw_count_and_next_draw(self):
+        alice = User.objects.create_user("alice")
+        project = make_project(owner=alice, stitches=[("Shell", 6, 1, 1)], colors=["red"])
+        add_draw(project, "Shell", "red", rows=2)
+        add_draw(project, "Shell", "red", rows=3)
+        make_project(owner=alice, name="Empty")
+        self.client.force_login(alice)
+
+        response = self.client.get(reverse("project_list"))
+
+        self.assertContains(response, "2 draws")
+        self.assertContains(response, "Next: Shell in red, 3 rows")
+        self.assertContains(response, "No draws yet")
+
     def test_requires_login(self):
         response = self.client.get(reverse("project_list"))
 

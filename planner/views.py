@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.db.models import ProtectedError
+from django.db.models import Count, ProtectedError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
@@ -29,7 +29,9 @@ def own_draw(request, pk):
 
 @login_required
 def project_list(request):
-    projects = request.user.projects.all()
+    projects = list(request.user.projects.annotate(draw_count=Count("draws")))
+    for project in projects:
+        project.latest = project.draws.select_related("stitch__stitch", "color1", "color2").last()
     return render(request, "planner/project_list.html", {"projects": projects})
 
 
