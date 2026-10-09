@@ -31,3 +31,15 @@ document.addEventListener("input", (event) => {
     item.hidden = !checked && !item.textContent.toLowerCase().includes(query);
   }
 });
+
+// On the draw form, show the second color only for stitches that need two colors.
+function syncSecondColor(select) {
+  const group = select.form.querySelector("[data-second-color]");
+  const needsTwo = select.selectedOptions[0]?.dataset.colors === "2";
+  group.hidden = !needsTwo;
+  if (!needsTwo) group.querySelector("select").value = "";
+}
+document.querySelectorAll("[data-stitch-select]").forEach(syncSecondColor);
+document.addEventListener("change", (event) => {
+  if (event.target.matches("[data-stitch-select]")) syncSecondColor(event.target);
+});

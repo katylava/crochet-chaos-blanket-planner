@@ -93,6 +93,19 @@ class ProjectCreateForm(ProjectSettingsForm):
         return cleaned
 
 
+class ProjectStitchSelect(forms.Select):
+    """A stitch select whose options say how many colors each stitch needs."""
+
+    def __init__(self):
+        super().__init__(attrs={"data-stitch-select": ""})
+
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(name, value, label, selected, index, subindex, attrs)
+        if value:
+            option["attrs"] = {"data-colors": value.instance.stitch.colors, **option["attrs"]}
+        return option
+
+
 class DrawForm(NumericInputsMixin, forms.ModelForm):
     """Manual edits. These aren't checked against the repeat rule."""
 
@@ -100,6 +113,7 @@ class DrawForm(NumericInputsMixin, forms.ModelForm):
         model = Draw
         fields = ["stitch", "color1", "color2", "rows"]
         labels = {"color1": "Color", "color2": "Second color"}
+        widgets = {"stitch": ProjectStitchSelect()}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -149,7 +149,7 @@ class DrawEditTests(DrawViewTestCase):
 
     def test_edit_page_shows_form_and_requires_stitch(self):
         response = self.client.get(reverse("draw_edit", args=[self.draw.pk]))
-        self.assertContains(response, "Edit draw in Blanket")
+        self.assertContains(response, "Edit draw 1 in Blanket")
 
         response = self.client.post(
             reverse("draw_edit", args=[self.draw.pk]), {"color1": self.ids["red"], "rows": 2}
@@ -162,3 +162,11 @@ class DrawEditTests(DrawViewTestCase):
         response = self.client.get(reverse("project_detail", args=[self.project.pk]))
 
         self.assertContains(response, reverse("stitch_detail", args=[draw.stitch.stitch_id]))
+
+
+    def test_stitch_options_say_how_many_colors_they_need(self):
+        response = self.client.get(reverse("draw_edit", args=[self.draw.pk]))
+
+        self.assertContains(response, f'value="{self.ids["Moss"]}" data-colors="2"')
+        self.assertContains(response, f'value="{self.ids["Shell"]}" data-colors="1"')
+        self.assertContains(response, 'data-second-color')
