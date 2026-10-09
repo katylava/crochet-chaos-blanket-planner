@@ -155,3 +155,10 @@ class DrawEditTests(DrawViewTestCase):
             reverse("draw_edit", args=[self.draw.pk]), {"color1": self.ids["red"], "rows": 2}
         )
         self.assertContains(response, "This field is required.")
+
+    def test_draw_links_to_stitch_detail(self):
+        draw = add_draw(self.project, "Shell", "red")
+
+        response = self.client.get(reverse("project_detail", args=[self.project.pk]))
+
+        self.assertContains(response, reverse("stitch_detail", args=[draw.stitch.stitch_id]))

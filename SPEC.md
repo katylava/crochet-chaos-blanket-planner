@@ -58,7 +58,8 @@ private to avoid copyright infringement.
 Each stitch also has an owner and a public or private flag.
 
 Each stitch has a page that shows its photo, numbers, source, and instructions.
-The stitch list links to it.
+The stitch list, a project's stitch list, and each draw in a project's history
+link to it. The shared project page doesn't.
 
 **Photo storage:**
 
