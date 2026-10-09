@@ -9,6 +9,12 @@ truth for behavior. Read it before changing features.
   code.
 - If the spec doesn't cover something, ask me. Don't fill the gap with a guess.
 
+## Keeping this file current
+
+- After any change, check whether it made anything in this file inaccurate,
+  such as commands, app layout, testing rules, or data rules. If it did, update
+  this file in the same commit.
+
 ## Stack
 
 - Django with server-rendered templates, SQLite, and Django's auth and admin.
