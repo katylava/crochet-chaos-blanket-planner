@@ -26,7 +26,8 @@ def stitch_create(request):
     form = StitchForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         form.instance.owner = request.user
-        form.save()
+        stitch = form.save()
+        messages.success(request, f"Added {stitch}.")
         return redirect("stitch_list")
     return render(request, "stitches/stitch_form.html", {"form": form})
 
@@ -42,6 +43,7 @@ def stitch_edit(request, pk):
     form = StitchForm(request.POST or None, request.FILES or None, instance=stitch)
     if form.is_valid():
         form.save()
+        messages.success(request, f"Saved {stitch}.")
         return redirect("stitch_list")
     return render(request, "stitches/stitch_form.html", {"form": form})
 
@@ -54,4 +56,6 @@ def stitch_delete(request, pk):
         stitch.delete()
     except ProtectedError:
         messages.error(request, f"{stitch.name} is used in a project, so it can't be deleted.")
+    else:
+        messages.success(request, f"Deleted {stitch.name}.")
     return redirect("stitch_list")

@@ -61,6 +61,7 @@ def project_edit(request, pk):
     form = ProjectEditForm(request.POST or None, instance=project)
     if form.is_valid():
         form.save()
+        messages.success(request, "Saved settings.")
         return redirect("project_detail", project.pk)
     return render(
         request,
@@ -109,7 +110,9 @@ def draw_create(request, pk):
 @require_POST
 def draw_delete(request, pk):
     draw = own_draw(request, pk)
+    number = draw.position()
     draw.delete()
+    messages.success(request, f"Deleted draw {number}.")
     return redirect("project_detail", draw.project_id)
 
 
@@ -129,6 +132,7 @@ def draw_reroll(request, pk):
             new.rows,
         )
         draw.save()
+        messages.success(request, f"Rerolled draw {draw.position()}.")
     return redirect("project_detail", draw.project_id)
 
 
@@ -138,6 +142,7 @@ def draw_edit(request, pk):
     form = DrawForm(request.POST or None, instance=draw)
     if form.is_valid():
         form.save()
+        messages.success(request, f"Saved draw {draw.position()}.")
         return redirect("project_detail", draw.project_id)
     return render(request, "planner/draw_form.html", {"form": form, "draw": draw})
 
@@ -152,6 +157,7 @@ def toggle_active(request, item):
             return redirect("project_detail", item.project_id)
     item.active = not item.active
     item.save(update_fields=["active"])
+    messages.success(request, f"{'Activated' if item.active else 'Deactivated'} {item}.")
     return redirect("project_detail", item.project_id)
 
 
@@ -182,6 +188,7 @@ def project_stitch_add(request, pk):
     form = AddStitchForm(request.POST, project=project)
     if form.is_valid():
         ProjectStitch.objects.create(project=project, stitch=form.cleaned_data["stitch"])
+        messages.success(request, f"Added {form.cleaned_data['stitch']}.")
     else:
         report_form_errors(request, form)
     return redirect("project_detail", project.pk)
@@ -193,7 +200,8 @@ def project_color_add(request, pk):
     project = own_project(request, pk)
     form = ColorForm(request.POST, instance=ProjectColor(project=project))
     if form.is_valid():
-        form.save()
+        color = form.save()
+        messages.success(request, f"Added {color}.")
     else:
         report_form_errors(request, form)
     return redirect("project_detail", project.pk)
@@ -205,6 +213,7 @@ def project_color_edit(request, pk):
     form = ColorForm(request.POST or None, instance=color)
     if form.is_valid():
         form.save()
+        messages.success(request, f"Saved {color}.")
         return redirect("project_detail", color.project_id)
     # Show the saved name in the heading even when the form has an invalid new one.
     saved_name = ProjectColor.objects.get(pk=color.pk).name
@@ -226,6 +235,8 @@ def remove_item(request, item):
         item.delete()
     except ProtectedError:
         messages.error(request, f"{item} is used in a draw. Deactivate it instead.")
+    else:
+        messages.success(request, f"Removed {item}.")
     return redirect("project_detail", item.project_id)
 
 
@@ -263,6 +274,7 @@ def diary(request, pk):
 def project_share(request, pk):
     project = own_project(request, pk)
     project.set_shared(not project.is_shared)
+    messages.success(request, f"Sharing is {'on' if project.is_shared else 'off'}.")
     return redirect("project_detail", project.pk)
 
 

@@ -119,6 +119,10 @@ class Draw(models.Model):
     class Meta:
         ordering = ["id"]
 
+    def position(self):
+        """This draw's 1-based number in the project's history."""
+        return self.project.draws.filter(id__lte=self.id).count()
+
     @property
     def colors_text(self):
         if self.color2:

@@ -33,7 +33,10 @@
     svg.photo { max-width: 200px; }
     .color-row { display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; }
     .color-row p { margin: 0; }
-    .messages li { color: var(--pico-del-color); list-style: none; }
+    .messages { padding: 0; }
+    .messages li { list-style: none; padding: 0.5rem 0.75rem; border-radius: var(--pico-border-radius); margin-bottom: 0.5rem; }
+    .messages li.error { color: var(--pico-del-color); border: 1px solid var(--pico-del-color); }
+    .messages li.success { color: var(--pico-ins-color); border: 1px solid var(--pico-ins-color); }
   </style>
 </head>
 <body>
@@ -51,7 +54,7 @@
   </header>
   <main>
     {% if messages %}
-      <ul class="messages">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
+      <ul class="messages">{% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}</ul>
     {% endif %}
     {% block content %}{% endblock %}
   </main>
