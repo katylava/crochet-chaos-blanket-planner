@@ -1,10 +1,17 @@
+import shutil
+import tempfile
+
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from planner.models import ProjectStitch
 from planner.tests.factories import make_project
 from stitches.models import Stitch
+from stitches.photos import clean_photo
+from stitches.tests.test_photos import make_upload
+
+MEDIA_ROOT = tempfile.mkdtemp()
 
 
 class StitchListTests(TestCase):
@@ -23,7 +30,13 @@ class StitchListTests(TestCase):
         self.assertNotContains(response, "Owner private")
 
 
+@override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class StitchEditDeleteTests(TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
+
     def setUp(self):
         self.alice = User.objects.create_user("alice")
         self.owner = User.objects.create_user("owner")
@@ -73,3 +86,16 @@ class StitchEditDeleteTests(TestCase):
         response = self.client.get(reverse("stitch_edit", args=[self.mine.pk]))
 
         self.assertContains(response, "Edit Mine")
+
+    def test_list_shows_photo_thumbnail(self):
+        self.mine.photo = clean_photo(make_upload())
+        self.mine.save()
+
+        response = self.client.get(reverse("stitch_list"))
+
+        self.assertContains(response, f'src="{self.mine.photo.url}"')
+
+    def test_list_shows_placeholder_for_stitch_without_photo(self):
+        response = self.client.get(reverse("stitch_list"))
+
+        self.assertContains(response, 'aria-label="No photo"', count=2)
