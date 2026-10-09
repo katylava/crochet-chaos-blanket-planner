@@ -81,8 +81,7 @@ truth for behavior. Read it before changing features.
 
 ## Data rules
 
-- A stitch's `source` is the URL the stitch data came from. It isn't for photo
-  attribution.
+- A stitch's `source` is the URL the stitch data came from.
 - A stitch's `photo_credit` holds the photo's author and license.
 - Photos are resized to 1200 px wide JPEGs on upload. Only the resized file is
   kept.
