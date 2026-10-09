@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ project.name }}{% endblock %}
+{% block content %}
+<h1>{{ project.name }}</h1>
+<p>{{ project.stitch_count }} stitches per row</p>
+
+<h2>Stitches</h2>
+<ul>{% for item in stitches %}<li>{{ item }}</li>{% endfor %}</ul>
+
+<h2>Colors</h2>
+<ul>{% for color in colors %}<li>{{ color }}</li>{% endfor %}</ul>
+
+<h2>Draws</h2>
+<table>
+  <tr><th>#</th><th>Stitch</th><th>Colors</th><th>Rows</th></tr>
+  {% for draw in draws %}
+  <tr><td>{{ forloop.counter }}</td><td>{{ draw.stitch }}</td><td>{{ draw.colors_text }}</td><td>{{ draw.rows }}</td></tr>
+  {% empty %}
+  <tr><td colspan="4">No draws yet.</td></tr>
+  {% endfor %}
+</table>
+
+{% if photos %}
+<h2>Progress photos</h2>
+{% for entry in photos %}
+<p><img src="{{ entry.photo.url }}" alt="Progress photo from {{ entry.created_at|date }}" style="max-width:100%"></p>
+{% endfor %}
+{% endif %}
+{% endblock %}

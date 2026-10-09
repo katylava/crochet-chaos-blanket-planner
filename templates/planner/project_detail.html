@@ -15,6 +15,16 @@
 </section>
 
 <section>
+  <h2>Sharing</h2>
+  {% if project.is_shared %}
+    <p>Anyone with this link can view the project: <a href="{% url 'shared_project' project.share_token %}">{{ request.scheme }}://{{ request.get_host }}{% url 'shared_project' project.share_token %}</a></p>
+  {% else %}
+    <p>Sharing is off.</p>
+  {% endif %}
+  <form method="post" action="{% url 'project_share' project.pk %}">{% csrf_token %}<button>{{ project.is_shared|yesno:"Turn off sharing,Turn on sharing" }}</button></form>
+</section>
+
+<section>
   <h2>Stitches</h2>
   <table>
     <tr><th>Stitch</th><th>Draws</th><th>Rows</th><th>Status</th><th></th></tr>

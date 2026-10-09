@@ -230,3 +230,27 @@ def diary(request, pk):
         "planner/diary.html",
         {"project": project, "entries": project.diary_entries.all(), "form": form},
     )
+
+
+@login_required
+@require_POST
+def project_share(request, pk):
+    project = own_project(request, pk)
+    project.set_shared(not project.is_shared)
+    return redirect("project_detail", project.pk)
+
+
+def shared_project(request, token):
+    """Read-only page for anyone with the link. Shows only what the spec allows."""
+    project = get_object_or_404(Project, share_token=token, is_shared=True)
+    return render(
+        request,
+        "planner/shared_project.html",
+        {
+            "project": project,
+            "stitches": project.project_stitches.select_related("stitch"),
+            "colors": project.colors.all(),
+            "draws": project.draws.select_related("stitch__stitch", "color1", "color2"),
+            "photos": project.diary_entries.exclude(photo=""),
+        },
+    )
