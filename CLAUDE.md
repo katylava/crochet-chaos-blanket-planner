@@ -49,9 +49,9 @@ truth for behavior. Read it before changing features.
   file over 10 MB, such as an uncompressed BMP.
 - Don't assert that a short word is absent from a page. Random CSRF tokens can
   contain it. Assert on longer text instead.
-- Playwright is installed for my own local checks of the running app. Don't add
-  Playwright tests to the suite. Put check scripts in your scratchpad, not the
-  repo.
+- Playwright is installed so you can check the running app yourself. Use it to
+  look at pages after UI changes. Don't add Playwright tests to the suite. Put
+  check scripts in your scratchpad, not the repo.
 
 ## Data rules
 
