@@ -5,7 +5,8 @@
 <p>Only you can see your private stitches.</p>
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
-  {{ form.as_p }}
+  {{ form.non_field_errors }}
+  {% for field in form %}{{ field.as_field_group }}{% endfor %}
   <button>Save</button>
 </form>
 {% endblock %}
