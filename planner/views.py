@@ -264,8 +264,22 @@ def diary(request, pk):
     return render(
         request,
         "planner/diary.html",
-        {"project": project, "entries": project.diary_entries.all(), "form": form},
+        {
+            "project": project,
+            "entries": project.diary_entries.order_by("-created_at"),
+            "form": form,
+        },
     )
+
+
+@login_required
+@require_POST
+def diary_entry_delete(request, pk):
+    entry = get_object_or_404(DiaryEntry, pk=pk, project__owner=request.user)
+    entry.photo.delete(save=False)
+    entry.delete()
+    messages.success(request, "Deleted the diary entry.")
+    return redirect("diary", entry.project_id)
 
 
 @login_required

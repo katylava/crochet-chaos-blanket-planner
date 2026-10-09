@@ -1,9 +1,11 @@
 import shutil
 import tempfile
+from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 from PIL import Image
 
 from planner.models import DiaryEntry
@@ -73,3 +75,39 @@ class DiaryTests(TestCase):
 
         self.assertContains(response, "at most 10 MB")
         self.assertNotContains(response, "Add text, a photo, or both.")
+
+    def test_form_comes_first_and_entries_are_newest_first(self):
+        DiaryEntry.objects.create(
+            project=self.project, text="older", created_at=timezone.now() - timedelta(days=1)
+        )
+        DiaryEntry.objects.create(project=self.project, text="newer")
+
+        html = self.client.get(self.url).content.decode()
+
+        self.assertLess(html.index("Add entry"), html.index("newer"))
+        self.assertLess(html.index("newer"), html.index("older"))
+
+    def test_shows_time_for_local_formatting(self):
+        entry = DiaryEntry.objects.create(project=self.project, text="hi")
+
+        response = self.client.get(self.url)
+
+        self.assertContains(response, f'<time datetime="{entry.created_at.isoformat()}" data-local>')
+
+    def test_deletes_entry_after_confirming(self):
+        entry = DiaryEntry.objects.create(project=self.project, text="oops")
+        delete_url = reverse("diary_entry_delete", args=[entry.pk])
+
+        self.assertContains(self.client.get(self.url), 'data-confirm="Delete this diary entry?"')
+        response = self.client.post(delete_url)
+
+        self.assertRedirects(response, self.url)
+        self.assertFalse(DiaryEntry.objects.exists())
+
+    def test_other_users_cannot_delete_entries(self):
+        entry = DiaryEntry.objects.create(project=self.project, text="mine")
+        self.client.force_login(User.objects.create_user("bob"))
+
+        response = self.client.post(reverse("diary_entry_delete", args=[entry.pk]))
+
+        self.assertEqual(response.status_code, 404)

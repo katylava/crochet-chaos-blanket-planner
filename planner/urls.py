@@ -8,6 +8,7 @@ urlpatterns = [
     path("projects/<int:pk>/", views.project_detail, name="project_detail"),
     path("projects/<int:pk>/edit/", views.project_edit, name="project_edit"),
     path("projects/<int:pk>/diary/", views.diary, name="diary"),
+    path("diary/<int:pk>/delete/", views.diary_entry_delete, name="diary_entry_delete"),
     path("projects/<int:pk>/share/", views.project_share, name="project_share"),
     path("s/<str:token>/", views.shared_project, name="shared_project"),
     path("projects/<int:pk>/draw/", views.draw_create, name="draw_create"),

@@ -169,6 +169,7 @@ class DiaryEntryForm(PhotoFormMixin, forms.ModelForm):
     class Meta:
         model = DiaryEntry
         fields = ["text", "photo"]
+        widgets = {"text": forms.Textarea(attrs={"rows": 3})}
 
     def clean(self):
         cleaned = super().clean()

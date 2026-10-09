@@ -43,3 +43,11 @@ document.querySelectorAll("[data-stitch-select]").forEach(syncSecondColor);
 document.addEventListener("change", (event) => {
   if (event.target.matches("[data-stitch-select]")) syncSecondColor(event.target);
 });
+
+// Show <time data-local> in the viewer's own time zone. The server renders UTC.
+document.querySelectorAll("time[data-local]").forEach((time) => {
+  time.textContent = new Date(time.dateTime).toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+});

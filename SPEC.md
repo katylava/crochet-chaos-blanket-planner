@@ -138,7 +138,8 @@ what to deactivate. Row totals aren't shown.
 ### Diary
 
 A project has a diary. Each entry has a date and time, text, and at most one progress
-photo. An entry needs text or a photo, and can have both. Progress photos follow
+photo. An entry needs text or a photo, and can have both. The user can delete an
+entry. Times show in the viewer's time zone. Progress photos follow
 the same storage rules as stitch photos.
 
 When a project's diary is empty, the diary prompts the user to make the first

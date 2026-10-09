@@ -3,20 +3,25 @@
 {% block content %}
 <h1>Diary for <a href="{% url 'project_detail' project.pk %}">{{ project.name }}</a></h1>
 
-{% for entry in entries %}
-<article>
-  <h2>{{ entry.created_at }}</h2>
-  {% if entry.photo %}<img src="{{ entry.photo.url }}" alt="Progress photo" style="max-width:100%">{% endif %}
-  {% if entry.text %}<p>{{ entry.text|linebreaksbr }}</p>{% endif %}
-</article>
-{% empty %}
-<p>Your diary is empty. Make your first entry a photo of all the yarns for this project.</p>
-{% endfor %}
-
-<h2>New entry</h2>
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
-  {{ form.as_p }}
+  {% if not entries %}<p>Your diary is empty. Make your first entry a photo of all the yarns for this project.</p>{% endif %}
+  {{ form.non_field_errors }}
+  {{ form.text.as_field_group }}
+  {{ form.photo.as_field_group }}
   <button>Add entry</button>
 </form>
+
+{% for entry in entries %}
+<article>
+  <header>
+    <time datetime="{{ entry.created_at|date:'c' }}" data-local>{{ entry.created_at }} UTC</time>
+  </header>
+  {% if entry.photo %}<a href="{{ entry.photo.url }}" target="_blank" rel="noopener"><img src="{{ entry.photo.url }}" alt="Progress photo" class="photo"></a>{% endif %}
+  {% if entry.text %}<p>{{ entry.text|linebreaksbr }}</p>{% endif %}
+  <footer class="actions">
+    <form method="post" action="{% url 'diary_entry_delete' entry.pk %}" data-confirm="Delete this diary entry?">{% csrf_token %}<button class="link-button">Delete</button></form>
+  </footer>
+</article>
+{% endfor %}
 {% endblock %}
