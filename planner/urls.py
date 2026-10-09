@@ -7,6 +7,7 @@ urlpatterns = [
     path("projects/new/", views.project_create, name="project_create"),
     path("projects/<int:pk>/", views.project_detail, name="project_detail"),
     path("projects/<int:pk>/edit/", views.project_edit, name="project_edit"),
+    path("projects/<int:pk>/diary/", views.diary, name="diary"),
     path("projects/<int:pk>/draw/", views.draw_create, name="draw_create"),
     path("projects/<int:pk>/stitches/add/", views.project_stitch_add, name="project_stitch_add"),
     path("projects/<int:pk>/colors/add/", views.project_color_add, name="project_color_add"),

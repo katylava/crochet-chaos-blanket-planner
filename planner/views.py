@@ -8,11 +8,12 @@ from django.views.decorators.http import require_POST
 from planner.forms import (
     AddColorsForm,
     AddStitchForm,
+    DiaryEntryForm,
     DrawForm,
     ProjectCreateForm,
     ProjectEditForm,
 )
-from planner.models import Draw, Project, ProjectColor, ProjectStitch
+from planner.models import DiaryEntry, Draw, Project, ProjectColor, ProjectStitch
 from planner.rules import DrawError, pick_draw, project_fit_errors
 from planner.size_guide import GUIDE_TEXT, SIZES
 
@@ -214,3 +215,18 @@ def project_stitch_remove(request, pk):
 def project_color_remove(request, pk):
     item = get_object_or_404(ProjectColor, pk=pk, project__owner=request.user)
     return remove_item(request, item)
+
+
+@login_required
+def diary(request, pk):
+    project = own_project(request, pk)
+    entry = DiaryEntry(project=project)
+    form = DiaryEntryForm(request.POST or None, request.FILES or None, instance=entry)
+    if form.is_valid():
+        form.save()
+        return redirect("diary", project.pk)
+    return render(
+        request,
+        "planner/diary.html",
+        {"project": project, "entries": project.diary_entries.all(), "form": form},
+    )

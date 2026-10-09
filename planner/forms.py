@@ -1,7 +1,8 @@
 from django import forms
 
-from planner.models import Draw, Project
+from planner.models import DiaryEntry, Draw, Project
 from planner.rules import fit_errors, project_fit_errors
+from stitches.forms import PhotoFormMixin
 from stitches.models import Stitch
 
 
@@ -109,3 +110,15 @@ class AddColorsForm(forms.Form):
 
     def clean_colors(self):
         return parse_colors(self.cleaned_data["colors"])
+
+
+class DiaryEntryForm(PhotoFormMixin, forms.ModelForm):
+    class Meta:
+        model = DiaryEntry
+        fields = ["text", "photo"]
+
+    def clean(self):
+        cleaned = super().clean()
+        if not cleaned.get("text") and not cleaned.get("photo") and not self.errors:
+            raise forms.ValidationError("Add text, a photo, or both.")
+        return cleaned

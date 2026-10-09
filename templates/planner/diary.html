@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Diary: {{ project.name }}{% endblock %}
+{% block content %}
+<h1>Diary for <a href="{% url 'project_detail' project.pk %}">{{ project.name }}</a></h1>
+
+{% for entry in entries %}
+<article>
+  <h2>{{ entry.created_at }}</h2>
+  {% if entry.photo %}<img src="{{ entry.photo.url }}" alt="Progress photo" style="max-width:100%">{% endif %}
+  {% if entry.text %}<p>{{ entry.text|linebreaksbr }}</p>{% endif %}
+</article>
+{% empty %}
+<p>Your diary is empty. Make your first entry a photo of all the yarns for this project.</p>
+{% endfor %}
+
+<h2>New entry</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button>Add entry</button>
+</form>
+{% endblock %}

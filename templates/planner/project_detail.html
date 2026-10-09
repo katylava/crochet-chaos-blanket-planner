@@ -11,7 +11,7 @@
     <li>N = {{ project.repeat_gap }}: a stitch or color in the last {{ project.repeat_gap }} draws can't be drawn</li>
   </ul>
   {% if project.notes %}<p>{{ project.notes|linebreaksbr }}</p>{% endif %}
-  <p><a href="{% url 'project_edit' project.pk %}">Edit settings</a></p>
+  <p><a href="{% url 'project_edit' project.pk %}">Edit settings</a> | <a href="{% url 'diary' project.pk %}">Diary</a></p>
 </section>
 
 <section>
