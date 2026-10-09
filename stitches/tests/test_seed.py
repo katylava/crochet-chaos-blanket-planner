@@ -32,3 +32,18 @@ class SeedDevTests(TestCase):
 
         self.assertEqual(Stitch.objects.count(), count)
         self.assertEqual(User.objects.count(), 1)
+
+    def test_seeds_instructions(self):
+        self.run_seed()
+
+        self.assertFalse(Stitch.objects.filter(instructions="").exists())
+
+    def test_fills_blank_instructions_without_overwriting_edits(self):
+        self.run_seed()
+        Stitch.objects.filter(name="Single crochet").update(instructions="")
+        Stitch.objects.filter(name="Double crochet").update(instructions="My own notes")
+
+        self.run_seed()
+
+        self.assertNotEqual(Stitch.objects.get(name="Single crochet").instructions, "")
+        self.assertEqual(Stitch.objects.get(name="Double crochet").instructions, "My own notes")
