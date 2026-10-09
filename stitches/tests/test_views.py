@@ -99,3 +99,42 @@ class StitchEditDeleteTests(TestCase):
         response = self.client.get(reverse("stitch_list"))
 
         self.assertContains(response, 'aria-label="No photo"', count=2)
+
+
+class StitchDetailTests(TestCase):
+    def setUp(self):
+        self.alice = User.objects.create_user("alice")
+        self.owner = User.objects.create_user("owner")
+        self.client.force_login(self.alice)
+
+    def test_shows_stitch_with_instructions(self):
+        stitch = Stitch.objects.create(
+            name="Moss",
+            multiple=2,
+            edge_stitches=1,
+            owner=self.owner,
+            is_public=True,
+            instructions="Row 1: sc, ch 1.\nRow 2: sc in ch-1 space.",
+            source="https://example.com/moss",
+        )
+
+        response = self.client.get(reverse("stitch_detail", args=[stitch.pk]))
+
+        self.assertContains(response, "<h1>Moss</h1>", html=True)
+        self.assertContains(response, "Row 1: sc, ch 1.<br>Row 2: sc in ch-1 space.")
+        self.assertContains(response, 'href="https://example.com/moss"')
+        self.assertContains(response, 'aria-label="No photo"')
+
+    def test_hides_other_users_private_stitch(self):
+        stitch = Stitch.objects.create(name="Secret", multiple=2, owner=self.owner)
+
+        response = self.client.get(reverse("stitch_detail", args=[stitch.pk]))
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_list_links_to_detail(self):
+        stitch = Stitch.objects.create(name="Moss", multiple=2, owner=self.alice)
+
+        response = self.client.get(reverse("stitch_list"))
+
+        self.assertContains(response, reverse("stitch_detail", args=[stitch.pk]))

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ stitch.name }}{% endblock %}
+{% block content %}
+<h1>{{ stitch.name }}</h1>
+{% if stitch.photo %}
+  <a href="{{ stitch.photo.url }}"><img src="{{ stitch.photo.url }}" alt="{{ stitch.name }}" class="photo"></a>
+{% else %}
+  {% include "stitches/_no_photo.html" with css_class="photo" %}
+{% endif %}
+<ul>
+  <li>Multiple of {{ stitch.multiple }} + {{ stitch.edge_stitches }}</li>
+  <li>{{ stitch.colors }} color{{ stitch.colors|pluralize }}</li>
+  <li>{{ stitch.is_public|yesno:"Public,Private" }}</li>
+  {% if stitch.source %}<li>Source: <a href="{{ stitch.source }}">{{ stitch.source }}</a></li>{% endif %}
+</ul>
+<h2>Instructions</h2>
+{% if stitch.instructions %}
+  <p>{{ stitch.instructions|linebreaksbr }}</p>
+{% else %}
+  <p>No instructions yet.</p>
+{% endif %}
+{% if not stitch.is_public and stitch.owner_id == user.id %}
+  <p><a href="{% url 'stitch_edit' stitch.pk %}">Edit</a></p>
+{% endif %}
+{% endblock %}

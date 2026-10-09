@@ -16,6 +16,12 @@ def stitch_list(request):
 
 
 @login_required
+def stitch_detail(request, pk):
+    stitch = get_object_or_404(Stitch.objects.visible_to(request.user), pk=pk)
+    return render(request, "stitches/stitch_detail.html", {"stitch": stitch})
+
+
+@login_required
 def stitch_create(request):
     form = StitchForm(request.POST or None, request.FILES or None)
     if form.is_valid():

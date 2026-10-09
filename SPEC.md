@@ -57,6 +57,9 @@ private to avoid copyright infringement.
 
 Each stitch also has an owner and a public or private flag.
 
+Each stitch has a page that shows its photo, numbers, source, and instructions.
+The stitch list links to it.
+
 **Photo storage:**
 
 - Reject uploads over 10 MB. The limit is high so that unedited phone photos
