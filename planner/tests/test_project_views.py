@@ -195,8 +195,9 @@ class ProjectDetailTests(TestCase):
     def test_draw_button_comes_before_stitch_and_color_management(self):
         html = self.get().content.decode()
 
-        self.assertLess(html.index(">Draw</button>"), html.index('id="active-stitches"'))
-        self.assertLess(html.index(">Draw</button>"), html.index('id="active-colors"'))
+        draw_button = html.index(">Draw the next one</button>")
+        self.assertLess(draw_button, html.index('id="active-stitches"'))
+        self.assertLess(draw_button, html.index('id="active-colors"'))
 
     def test_highlights_latest_draw(self):
         add_draw(self.project, "Moss", "blue", "red", rows=2)

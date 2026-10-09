@@ -11,11 +11,11 @@
 <p><a href="{% url 'diary' project.pk %}">Diary</a> · <a href="{% url 'project_edit' project.pk %}">Edit settings</a></p>
 
 <section>
-  <form method="post" action="{% url 'draw_create' project.pk %}">{% csrf_token %}<button>Draw</button></form>
   {% if latest %}
-  <article id="latest-draw">
-    <header><strong>Draw {{ latest.number }}</strong>, the one to crochet next</header>
-    <p><a href="{% url 'stitch_detail' latest.stitch.stitch_id %}"><strong>{{ latest.stitch }}</strong></a> in {{ latest.colors_text }}, {{ latest.rows }} row{{ latest.rows|pluralize }}</p>
+  <article id="latest-draw" class="current-draw">
+    <p class="current-label">Draw {{ latest.number }} · crochet this next</p>
+    <p class="current-stitch"><a href="{% url 'stitch_detail' latest.stitch.stitch_id %}">{{ latest.stitch }}</a></p>
+    <p class="current-detail">in <strong>{{ latest.colors_text }}</strong>, <strong>{{ latest.rows }} row{{ latest.rows|pluralize }}</strong></p>
     <p>Padding: {{ latest.padding_text }}</p>
     <footer class="actions">
       <form method="post" action="{% url 'draw_reroll' latest.pk %}">{% csrf_token %}<button class="link-button">Reroll</button></form>
@@ -24,8 +24,9 @@
     </footer>
   </article>
   {% else %}
-  <p>No draws yet. Press Draw to start.</p>
+  <p>No draws yet. Press Draw to pick the first stitch, colors, and rows.</p>
   {% endif %}
+  <form method="post" action="{% url 'draw_create' project.pk %}">{% csrf_token %}<button>{% if latest %}Draw the next one{% else %}Draw{% endif %}</button></form>
 
   {% if history %}
   <h2>Earlier draws</h2>
