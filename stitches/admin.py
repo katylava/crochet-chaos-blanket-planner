@@ -16,6 +16,7 @@ class StitchAdminForm(PhotoFormMixin, forms.ModelForm):
             "instructions",
             "source",
             "photo",
+            "photo_credit",
             "is_public",
         ]
 

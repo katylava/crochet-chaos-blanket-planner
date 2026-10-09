@@ -54,10 +54,12 @@ private to avoid copyright infringement.
 | instructions  | no       |         | How to work the stitch, as plain text. Line breaks are kept when shown.                      |
 | source        | no       |         | The URL the stitch data came from.                                                           |
 | photo         | no       |         | An uploaded image of the stitch. See the photo storage rules below the table.                |
+| photo credit  | no       |         | Who took the photo and its license, as plain text. URLs in it are shown as links.            |
 
 Each stitch also has an owner and a public or private flag.
 
-Each stitch has a page that shows its photo, numbers, source, and instructions.
+Each stitch has a page that shows its photo and photo credit, numbers, source,
+and instructions.
 The stitch list, a project's stitch list, and each draw in a project's history
 link to it. The shared project page doesn't.
 

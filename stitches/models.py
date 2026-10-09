@@ -31,6 +31,11 @@ class Stitch(models.Model):
     instructions = models.TextField(blank=True, help_text="How to work the stitch.")
     source = models.URLField(blank=True, help_text="The URL the stitch data came from.")
     photo = models.ImageField(upload_to="stitches/", blank=True)
+    photo_credit = models.CharField(
+        max_length=500,
+        blank=True,
+        help_text="Who took the photo and its license, if it isn't yours. Links are clickable.",
+    )
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     is_public = models.BooleanField(default=False)
 

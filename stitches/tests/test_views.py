@@ -138,3 +138,27 @@ class StitchDetailTests(TestCase):
         response = self.client.get(reverse("stitch_list"))
 
         self.assertContains(response, reverse("stitch_detail", args=[stitch.pk]))
+
+    @override_settings(MEDIA_ROOT=MEDIA_ROOT)
+    def test_shows_photo_credit_with_linked_url(self):
+        stitch = Stitch.objects.create(
+            name="Moss",
+            multiple=2,
+            owner=self.alice,
+            photo=clean_photo(make_upload()),
+            photo_credit="Photo by Jane, CC BY-SA 4.0, https://example.com/photo",
+        )
+
+        response = self.client.get(reverse("stitch_detail", args=[stitch.pk]))
+
+        self.assertContains(response, "Photo by Jane, CC BY-SA 4.0")
+        self.assertContains(response, 'href="https://example.com/photo"')
+
+    def test_hides_photo_credit_without_photo(self):
+        stitch = Stitch.objects.create(
+            name="Moss", multiple=2, owner=self.alice, photo_credit="Photo by Jane"
+        )
+
+        response = self.client.get(reverse("stitch_detail", args=[stitch.pk]))
+
+        self.assertNotContains(response, "Photo by Jane")
