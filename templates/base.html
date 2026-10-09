@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Chaos Blanket Planner{% endblock %}</title>
+</head>
+<body>
+  <nav>
+    <a href="{% url 'project_list' %}">Chaos Blanket Planner</a>
+    {% if user.is_authenticated %}
+      | <a href="{% url 'project_list' %}">Projects</a>
+      | <form method="post" action="{% url 'logout' %}" style="display:inline">{% csrf_token %}<button>Log out</button></form>
+    {% endif %}
+  </nav>
+  {% if messages %}
+    <ul>{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
+  {% endif %}
+  <main>{% block content %}{% endblock %}</main>
+</body>
+</html>
