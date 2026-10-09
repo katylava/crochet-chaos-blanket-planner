@@ -19,3 +19,15 @@ document.addEventListener("submit", (event) => {
   const message = event.target.dataset.confirm;
   if (message && !window.confirm(message)) event.preventDefault();
 });
+
+// Search boxes with data-filter="ID" hide the [data-filter-item] elements inside
+// #ID whose text doesn't contain the search. Checked items always stay visible.
+document.addEventListener("input", (event) => {
+  const target = event.target.dataset.filter;
+  if (!target) return;
+  const query = event.target.value.trim().toLowerCase();
+  for (const item of document.getElementById(target).querySelectorAll("[data-filter-item]")) {
+    const checked = item.querySelector("input:checked");
+    item.hidden = !checked && !item.textContent.toLowerCase().includes(query);
+  }
+});

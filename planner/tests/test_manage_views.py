@@ -77,27 +77,47 @@ class ToggleTests(ManageTestCase):
 
 
 class AddRemoveTests(ManageTestCase):
-    def test_adds_visible_stitch(self):
+    def test_adds_several_visible_stitches(self):
         shell = Stitch.objects.create(name="Shell", multiple=6, owner=self.alice)
+        puff = Stitch.objects.create(name="Puff", multiple=2, owner=self.alice)
 
         response = self.client.post(
-            reverse("project_stitch_add", args=[self.project.pk]), {"stitch": shell.pk}
+            reverse("project_stitch_add", args=[self.project.pk]),
+            {"stitches": [shell.pk, puff.pk]},
         )
 
         self.assertRedirects(response, self.detail)
         self.assertTrue(self.stitch("Shell").active)
+        self.assertTrue(self.stitch("Puff").active)
+
+    def test_add_page_offers_only_visible_stitches_not_in_project(self):
+        bob = User.objects.create_user("bob")
+        Stitch.objects.create(name="Secret", multiple=6, owner=bob)
+        Stitch.objects.create(name="Shell", multiple=6, owner=self.alice)
+
+        response = self.client.get(reverse("project_stitch_add", args=[self.project.pk]))
+
+        self.assertContains(response, "Shell")
+        self.assertNotContains(response, "Secret")
+        self.assertNotContains(response, "A (multiple")
+        self.assertContains(response, 'data-filter="stitch-choices"')
 
     def test_cannot_add_hidden_or_duplicate_stitch(self):
         bob = User.objects.create_user("bob")
         secret = Stitch.objects.create(name="Secret", multiple=6, owner=bob)
         url = reverse("project_stitch_add", args=[self.project.pk])
 
-        response = self.client.post(url, {"stitch": secret.pk}, follow=True)
+        response = self.client.post(url, {"stitches": [secret.pk]})
         self.assertContains(response, "Select a valid choice")
 
-        response = self.client.post(url, {"stitch": self.stitch("A").stitch_id}, follow=True)
+        response = self.client.post(url, {"stitches": [self.stitch("A").stitch_id]})
         self.assertContains(response, "Select a valid choice")
         self.assertEqual(self.project.project_stitches.count(), 3)
+
+    def test_project_page_links_to_add_stitches(self):
+        response = self.client.get(self.detail)
+
+        self.assertContains(response, reverse("project_stitch_add", args=[self.project.pk]))
 
     def test_adds_color_with_yarn_link(self):
         response = self.client.post(
@@ -117,8 +137,8 @@ class AddRemoveTests(ManageTestCase):
         self.assertEqual(self.project.colors.filter(name="red").count(), 1)
 
     def test_removes_unused_stitch_and_color(self):
-        self.client.post(reverse("project_stitch_add", args=[self.project.pk]),
-                         {"stitch": Stitch.objects.create(name="D", multiple=1, owner=self.alice).pk})
+        d = Stitch.objects.create(name="D", multiple=1, owner=self.alice)
+        self.client.post(reverse("project_stitch_add", args=[self.project.pk]), {"stitches": [d.pk]})
         self.client.post(reverse("project_color_add", args=[self.project.pk]), {"name": "green"})
 
         self.client.post(reverse("project_stitch_remove", args=[self.stitch("D").pk]))
@@ -130,8 +150,8 @@ class AddRemoveTests(ManageTestCase):
 
     def test_refuses_to_remove_used_stitch_or_color(self):
         add_draw(self.project, "A", "red")
-        self.client.post(reverse("project_stitch_add", args=[self.project.pk]),
-                         {"stitch": Stitch.objects.create(name="D", multiple=1, owner=self.alice).pk})
+        d = Stitch.objects.create(name="D", multiple=1, owner=self.alice)
+        self.client.post(reverse("project_stitch_add", args=[self.project.pk]), {"stitches": [d.pk]})
         self.client.post(reverse("project_color_add", args=[self.project.pk]), {"name": "green"})
 
         response = self.client.post(

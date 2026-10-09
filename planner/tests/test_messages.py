@@ -31,7 +31,7 @@ class SuccessMessageTests(TestCase):
 
         self.assertEqual(self.post("project_stitch_toggle", a.pk), ["Deactivated A."])
         self.assertEqual(self.post("project_stitch_toggle", a.pk), ["Activated A."])
-        self.assertEqual(self.post("project_stitch_add", pk, data={"stitch": c.pk}), ["Added C."])
+        self.assertEqual(self.post("project_stitch_add", pk, data={"stitches": [c.pk]}), ["Added C."])
         self.assertEqual(
             self.post("project_color_add", pk, data={"name": "green"}), ["Added green."]
         )

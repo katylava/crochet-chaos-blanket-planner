@@ -120,14 +120,14 @@ class DrawForm(NumericInputsMixin, forms.ModelForm):
         return cleaned
 
 
-class AddStitchForm(forms.Form):
-    stitch = forms.ModelChoiceField(
-        queryset=Stitch.objects.none(), empty_label="Choose a stitch to add"
+class AddStitchesForm(forms.Form):
+    stitches = StitchChoiceField(
+        queryset=Stitch.objects.none(), widget=forms.CheckboxSelectMultiple
     )
 
     def __init__(self, *args, project, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["stitch"].queryset = Stitch.objects.visible_to(project.owner).exclude(
+        self.fields["stitches"].queryset = Stitch.objects.visible_to(project.owner).exclude(
             project_stitches__project=project
         )
 

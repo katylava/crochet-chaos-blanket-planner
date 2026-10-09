@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from planner.forms import (
-    AddStitchForm,
+    AddStitchesForm,
     ColorForm,
     DiaryEntryForm,
     DrawForm,
@@ -89,7 +89,6 @@ def project_detail(request, pk):
             "inactive_stitches": [s for s in stitches if not s.active],
             "active_colors": [c for c in colors if c.active],
             "inactive_colors": [c for c in colors if not c.active],
-            "add_stitch_form": AddStitchForm(project=project),
             "color_form": ColorForm(instance=ProjectColor(project=project)),
         },
     )
@@ -182,16 +181,16 @@ def report_form_errors(request, form):
 
 
 @login_required
-@require_POST
 def project_stitch_add(request, pk):
     project = own_project(request, pk)
-    form = AddStitchForm(request.POST, project=project)
+    form = AddStitchesForm(request.POST or None, project=project)
     if form.is_valid():
-        ProjectStitch.objects.create(project=project, stitch=form.cleaned_data["stitch"])
-        messages.success(request, f"Added {form.cleaned_data['stitch']}.")
-    else:
-        report_form_errors(request, form)
-    return redirect("project_detail", project.pk)
+        stitches = form.cleaned_data["stitches"]
+        for stitch in stitches:
+            ProjectStitch.objects.create(project=project, stitch=stitch)
+        messages.success(request, f"Added {', '.join(s.name for s in stitches)}.")
+        return redirect("project_detail", project.pk)
+    return render(request, "planner/stitch_add.html", {"project": project, "form": form})
 
 
 @login_required

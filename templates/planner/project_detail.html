@@ -67,11 +67,7 @@
     {% endfor %}
   </ul>
   {% endif %}
-  <form method="post" action="{% url 'project_stitch_add' project.pk %}" class="inline-form">
-    {% csrf_token %}
-    {{ add_stitch_form.stitch }}
-    <button>Add stitch</button>
-  </form>
+  <p><a href="{% url 'project_stitch_add' project.pk %}">Add stitches</a></p>
 </section>
 
 <section>

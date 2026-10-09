@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Add stitches{% endblock %}
+{% block content %}
+<h1>Add stitches to {{ project.name }}</h1>
+<form method="post">
+  {% csrf_token %}
+  {% include "planner/_stitch_picker.html" with field=form.stitches %}
+  <button>Add stitches</button>
+</form>
+<p><a href="{% url 'project_detail' project.pk %}">Back to project</a></p>
+{% endblock %}

@@ -6,7 +6,7 @@
   {% csrf_token %}
   {{ form.non_field_errors }}
   {% for field in form %}
-    {{ field.as_field_group }}
+    {% if field.name == "stitches" %}{% include "planner/_stitch_picker.html" %}{% else %}{{ field.as_field_group }}{% endif %}
     {% if field.name == "stitch_count" %}{% include "planner/_size_guide.html" %}{% endif %}
   {% endfor %}
   {% if colors %}

@@ -131,6 +131,11 @@ class ProjectCreateTests(TestCase):
         self.assertContains(response, "Moss (multiple of 2 + 1, 2 colors)")
         self.assertContains(response, "Single crochet (multiple of 1 + 0, 1 color)")
 
+    def test_stitch_choices_have_a_search_filter(self):
+        response = self.client.get(reverse("project_create"))
+
+        self.assertContains(response, 'data-filter="stitch-choices"')
+
     def test_offers_only_visible_stitches(self):
         bob = User.objects.create_user("bob")
         Stitch.objects.create(name="Bob secret", multiple=1, owner=bob)

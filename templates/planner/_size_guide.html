@@ -1,4 +1,4 @@
-<details open>
+<details{% if not form.instance.pk %} open{% endif %}>
   <summary><small>Size guide</small></summary>
   <p><small>{{ guide_text }}</small></p>
   <div class="table-scroll"><table>
