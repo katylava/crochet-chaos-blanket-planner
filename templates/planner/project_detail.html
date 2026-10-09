@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}{{ project.name }}{% endblock %}
+{% block content %}
+<h1>{{ project.name }}</h1>
+<p>
+  {{ project.stitch_count }} stitches per row ·
+  {{ project.min_rows }} to {{ project.max_rows }} rows per draw ·
+  {% if not project.repeat_gap %}Stitches and colors can be picked again right away.{% elif project.repeat_gap == 1 %}Once a stitch or color is picked, it's skipped for the next draw.{% else %}Once a stitch or color is picked, it's skipped for the next {{ project.repeat_gap }} draws.{% endif %}
+</p>
+{% if project.notes %}<p><small>{{ project.notes|linebreaksbr }}</small></p>{% endif %}
+<p><a href="{% url 'diary' project.pk %}">Diary</a> · <a href="{% url 'project_edit' project.pk %}">Edit settings</a></p>
+
+<section>
+  {% if latest %}
+  <article id="latest-draw" class="current-draw">
+    <p class="current-label">Draw {{ latest.number }} · crochet this next</p>
+    <p class="current-stitch"><a href="{% url 'stitch_detail' latest.stitch.stitch_id %}">{{ latest.stitch }}</a></p>
+    <p class="current-detail">in <strong>{{ latest.colors_text }}</strong>, <strong>{{ latest.rows }} row{{ latest.rows|pluralize }}</strong></p>
+    <p>Padding: {{ latest.padding_text }}</p>
+    <footer class="actions">
+      <form method="post" action="{% url 'draw_reroll' latest.pk %}">{% csrf_token %}<button class="link-button">Reroll</button></form>
+      <a href="{% url 'draw_edit' latest.pk %}">Edit</a>
+      <form method="post" action="{% url 'draw_delete' latest.pk %}" data-confirm="Delete draw {{ latest.number }}?">{% csrf_token %}<button class="link-button">Delete</button></form>
+    </footer>
+  </article>
+  {% else %}
+  <p>No draws yet. Press Draw to pick the first stitch, colors, and rows.</p>
+  {% endif %}
+  <form method="post" action="{% url 'draw_create' project.pk %}">{% csrf_token %}<button>{% if latest %}Draw the next one{% else %}Draw{% endif %}</button></form>
+
+  {% if history %}
+  <h2>Earlier draws</h2>
+  <ul id="history" class="draws">
+    {% for draw in history %}
+    <li>
+      <div class="draw-main">
+        <a href="{% url 'stitch_detail' draw.stitch.stitch_id %}" class="draw-stitch">{{ draw.stitch }}</a>
+        <span class="draw-detail">{{ draw.colors_text }}, {{ draw.rows }} row{{ draw.rows|pluralize }}</span>
+      </div>
+      <div class="draw-meta">
+        <span>Draw {{ draw.number }} · Padding: {{ draw.padding_text }}</span>
+        <span class="actions">
+          <a href="{% url 'draw_edit' draw.pk %}">Edit</a>
+          <form method="post" action="{% url 'draw_reroll' draw.pk %}" data-confirm="Reroll draw {{ draw.number }}? Its stitch, colors, and rows will be replaced.">{% csrf_token %}<button class="link-button">Reroll</button></form>
+          <form method="post" action="{% url 'draw_delete' draw.pk %}" data-confirm="Delete draw {{ draw.number }}?">{% csrf_token %}<button class="link-button">Delete</button></form>
+        </span>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Stitches</h2>
+  <div class="table-scroll"><table id="active-stitches">
+    <tr><th>Stitch</th><th>Draws</th><th></th></tr>
+    {% for item in active_stitches %}
+    <tr><td><a href="{% url 'stitch_detail' item.stitch_id %}">{{ item }}</a></td><td>{{ item.draw_count }}</td>
+      <td class="actions">
+        <form method="post" action="{% url 'project_stitch_toggle' item.pk %}">{% csrf_token %}<button class="link-button">Deactivate</button></form>
+        {% if not item.draw_count %}<form method="post" action="{% url 'project_stitch_remove' item.pk %}" data-confirm="Remove {{ item }} from this project?">{% csrf_token %}<button class="link-button">Remove</button></form>{% endif %}
+      </td></tr>
+    {% endfor %}
+  </table></div>
+  {% if inactive_stitches %}
+  <p><small>Inactive stitches aren't drawn.</small></p>
+  <ul id="inactive-stitches" class="inactive">
+    {% for item in inactive_stitches %}
+    <li><a href="{% url 'stitch_detail' item.stitch_id %}">{{ item }}</a>
+      <form method="post" action="{% url 'project_stitch_toggle' item.pk %}">{% csrf_token %}<button class="link-button">Activate</button></form>
+      {% if not item.draw_count %}<form method="post" action="{% url 'project_stitch_remove' item.pk %}" data-confirm="Remove {{ item }} from this project?">{% csrf_token %}<button class="link-button">Remove</button></form>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <p><a href="{% url 'project_stitch_add' project.pk %}">Add stitches</a></p>
+</section>
+
+<section>
+  <h2>Colors</h2>
+  <div class="table-scroll"><table id="active-colors">
+    <tr><th>Color</th><th>Draws</th><th></th></tr>
+    {% for item in active_colors %}
+    <tr><td>{% include "planner/_color_name.html" with color=item %}</td><td>{{ item.draw_count }}</td>
+      <td class="actions">
+        <a href="{% url 'project_color_edit' item.pk %}">Edit</a>
+        <form method="post" action="{% url 'project_color_toggle' item.pk %}">{% csrf_token %}<button class="link-button">Deactivate</button></form>
+        {% if not item.draw_count %}<form method="post" action="{% url 'project_color_remove' item.pk %}" data-confirm="Remove {{ item }} from this project?">{% csrf_token %}<button class="link-button">Remove</button></form>{% endif %}
+      </td></tr>
+    {% endfor %}
+  </table></div>
+  {% if inactive_colors %}
+  <p><small>Inactive colors aren't drawn.</small></p>
+  <ul id="inactive-colors" class="inactive">
+    {% for item in inactive_colors %}
+    <li>{% include "planner/_color_name.html" with color=item %}
+      <a href="{% url 'project_color_edit' item.pk %}">Edit</a>
+      <form method="post" action="{% url 'project_color_toggle' item.pk %}">{% csrf_token %}<button class="link-button">Activate</button></form>
+      {% if not item.draw_count %}<form method="post" action="{% url 'project_color_remove' item.pk %}" data-confirm="Remove {{ item }} from this project?">{% csrf_token %}<button class="link-button">Remove</button></form>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <form method="post" action="{% url 'project_color_add' project.pk %}" class="inline-form">
+    {% csrf_token %}
+    {{ color_form.name }}
+    {{ color_form.yarn_url }}
+    <button>Add color</button>
+  </form>
+</section>
+
+<section>
+  <h2>Sharing</h2>
+  {% if project.is_shared %}
+    <p>Anyone with this link can view the project: <a href="{% url 'shared_project' project.share_token %}">{{ request.scheme }}://{{ request.get_host }}{% url 'shared_project' project.share_token %}</a></p>
+  {% else %}
+    <p>Sharing is off.</p>
+  {% endif %}
+  <form method="post" action="{% url 'project_share' project.pk %}">{% csrf_token %}<button class="link-button">{{ project.is_shared|yesno:"Turn off sharing,Turn on sharing" }}</button></form>
+</section>
+{% endblock %}

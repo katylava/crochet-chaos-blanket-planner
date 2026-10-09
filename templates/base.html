@@ -1,0 +1,79 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Chaos Blanket Planner{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.0.6/css/pico.classless.min.css">
+  <script src="{% static 'app.js' %}" defer></script>
+  <style>
+    nav form { display: inline; margin: 0; }
+    nav button { padding: 0.2rem 0.6rem; margin: 0; font-size: 0.875rem; width: auto; }
+    /* Rare or secondary actions look like small links, not buttons. */
+    .actions, .inactive li { font-size: 0.875rem; }
+    .actions form, .inactive form { display: inline; margin: 0; }
+    .actions > a, .actions > form, .inactive li > a, .inactive li > form { margin: 0 0.75rem 0 0; }
+    .current-draw { margin: 1rem 0; }
+    .current-draw p { margin-bottom: 0.5rem; }
+    .current-label { font-size: 0.875rem; color: var(--pico-muted-color); text-transform: uppercase; letter-spacing: 0.05em; }
+    .current-stitch { font-size: 2.25rem; font-weight: 700; line-height: 1.15; }
+    .current-stitch a { text-decoration: none; }
+    .current-detail { font-size: 1.5rem; }
+    button.link-button {
+      background: none; border: none; padding: 0; margin: 0; width: auto;
+      color: var(--pico-primary); font-size: inherit; text-decoration: underline;
+      box-shadow: none; cursor: pointer;
+    }
+    .draws { list-style: none; padding: 0; }
+    .draws li { list-style: none; padding: 0.75rem 0; border-bottom: 1px solid var(--pico-muted-border-color); }
+    .draw-main { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.75rem; }
+    .draw-stitch { font-size: 1.25rem; font-weight: 700; text-decoration: none; }
+    .draw-detail { font-size: 1.125rem; }
+    .draw-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 1rem;
+      font-size: 0.875rem; color: var(--pico-muted-color); }
+    .inactive { color: var(--pico-muted-color); }
+    .inline-form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: start; }
+    .inline-form > select, .inline-form > input { flex: 1 1 12rem; margin-bottom: 0; }
+    .inline-form > button { width: auto; margin-bottom: 0; }
+    /* Wide tables scroll sideways on phones instead of widening the page. */
+    .table-scroll { overflow-x: auto; }
+    .thumb { width: 80px; height: 80px; object-fit: cover; border-radius: var(--pico-border-radius); }
+    .photo { display: block; width: 100%; max-width: 600px; height: auto; margin-bottom: 1rem; }
+    svg.photo { max-width: 200px; }
+    .color-row { display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; }
+    .color-row p { margin: 0; }
+    .picker { max-height: 20rem; overflow-y: auto; border: 1px solid var(--pico-muted-border-color);
+      border-radius: var(--pico-border-radius); padding: 0.5rem 0.75rem; margin-bottom: 1rem; }
+    .picker label { display: block; }
+    .stitch-list { list-style: none; padding: 0; }
+    .stitch-list li { list-style: none; display: flex; gap: 1rem; align-items: center;
+      padding: 0.5rem 0; border-bottom: 1px solid var(--pico-muted-border-color); }
+    .inline-form > label { flex: 0 0 auto; align-self: center; }
+    #id_repeat_gap { display: inline-block; width: 4rem; margin: 0 0.25rem; }
+    .messages { padding: 0; }
+    .messages li { list-style: none; padding: 0.5rem 0.75rem; border-radius: var(--pico-border-radius); margin-bottom: 0.5rem; }
+    .messages li.error { color: var(--pico-del-color); border: 1px solid var(--pico-del-color); }
+    .messages li.success { color: var(--pico-ins-color); border: 1px solid var(--pico-ins-color); }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <ul><li><strong><a href="{% url 'project_list' %}">Chaos Blanket Planner</a></strong></li></ul>
+      {% if user.is_authenticated %}
+      <ul>
+        <li><a href="{% url 'project_list' %}">Projects</a></li>
+        <li><a href="{% url 'stitch_list' %}">Stitches</a></li>
+        <li><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button>Log out</button></form></li>
+      </ul>
+      {% endif %}
+    </nav>
+  </header>
+  <main>
+    {% if messages %}
+      <ul class="messages">{% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}</ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

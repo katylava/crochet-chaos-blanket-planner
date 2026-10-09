@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ project.name }}{% endblock %}
+{% block content %}
+<h1>{{ project.name }}</h1>
+<p>{{ project.stitch_count }} stitches per row</p>
+
+<h2>Stitches</h2>
+<ul>{% for item in stitches %}<li>{{ item }}</li>{% endfor %}</ul>
+
+<h2>Colors</h2>
+<ul>{% for color in colors %}<li>{% include "planner/_color_name.html" %}</li>{% endfor %}</ul>
+
+<h2>Draws</h2>
+<ul class="draws">
+  {% for draw in draws reversed %}
+  <li>
+    <div class="draw-main">
+      <span class="draw-stitch">{{ draw.stitch }}</span>
+      <span class="draw-detail">{{ draw.colors_text }}, {{ draw.rows }} row{{ draw.rows|pluralize }}</span>
+    </div>
+    <div class="draw-meta"><span>Draw {{ forloop.revcounter }}</span></div>
+  </li>
+  {% empty %}
+  <li>No draws yet.</li>
+  {% endfor %}
+</ul>
+
+{% if photos %}
+<h2>Progress photos</h2>
+{% for entry in photos %}
+<p><img src="{{ entry.photo.url }}" alt="Progress photo from {{ entry.created_at|date }}" style="max-width:100%"></p>
+{% endfor %}
+{% endif %}
+{% endblock %}

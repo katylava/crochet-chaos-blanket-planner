@@ -51,10 +51,17 @@ private to avoid copyright infringement.
 | multiple      | yes      |         | `N` in "multiple of N + M": the number of stitches in one repeat.                            |
 | edge stitches | no       | 0       | `M` in "multiple of N + M", counting only stitches that appear in every row.                 |
 | colors        | no       | 1       | 1 or 2. A two-color stitch needs two different colors per draw.                              |
+| instructions  | no       |         | How to work the stitch, as plain text. Line breaks are kept when shown.                      |
 | source        | no       |         | The URL the stitch data came from.                                                           |
 | photo         | no       |         | An uploaded image of the stitch. See the photo storage rules below the table.                |
+| photo credit  | no       |         | Who took the photo and its license, as plain text. URLs in it are shown as links.            |
 
 Each stitch also has an owner and a public or private flag.
+
+Each stitch has a page that shows its photo and photo credit, numbers, source,
+and instructions.
+The stitch list, a project's stitch list, and each draw in a project's history
+link to it. The shared project page doesn't.
 
 **Photo storage:**
 
@@ -83,18 +90,25 @@ After development and before user feedback, the site owner fills the database
 with real stitches by researching them online and entering them through the
 admin site.
 
+The database will hold hundreds of public stitches. Every place that lists or
+chooses stitches must stay usable at that size: the stitch list has search and
+pages, and choosing stitches for a project uses a searchable list.
+
 ## Projects
 
 A project holds:
 
 - a name
 - the stitches chosen from the database
-- the colors chosen by the user, entered as names (for example "rust", "cream")
+- the colors chosen by the user, entered as names (for example "rust", "cream"),
+  each with an optional link to the yarn's product page
 - the stitch count per row, entered by the user
 - notes: optional free text about the project. The form's help text suggests
   recording the hook size, so the crocheter doesn't forget which hook they used.
 - the minimum and maximum rows per draw
-- `N`, the number of draws before a drawn stitch or color can be drawn again
+- `N`: once a stitch or color is picked, it's skipped for the next `N` draws. The
+  app words it this way, not as a "repeat" setting, since nothing is ever forced
+  to repeat.
 - the draw history
 
 Don't add a row-repeat field to stitches or round drawn row counts. The
@@ -102,6 +116,13 @@ crocheter decides how a drawn row count applies to a stitch whose motif spans
 several rows.
 
 All yarn is assumed to be weight 4 (worsted) in the MVP.
+
+### Editing colors
+
+The user can change a color's name or yarn link at any time, for example to fix
+a typo mid-project. Draws that use the color keep it under the new name. Two
+colors in one project can't share a name. Wherever colors are listed, a color
+with a yarn link links to it.
 
 ### Deactivating stitches and colors
 
@@ -113,13 +134,14 @@ draws keep them. The user can reactivate them.
 ### Usage counts
 
 The project shows, for each of its stitches and colors, the number of draws that
-used it and the total rows across those draws. Both colors of a two-color draw
-count. The counts help the user decide what to deactivate.
+used it. Both colors of a two-color draw count. The counts help the user decide
+what to deactivate. Row totals aren't shown.
 
 ### Diary
 
 A project has a diary. Each entry has a date and time, text, and at most one progress
-photo. An entry needs text or a photo, and can have both. Progress photos follow
+photo. An entry needs text or a photo, and can have both. The user can delete an
+entry. Times show in the viewer's time zone. Progress photos follow
 the same storage rules as stitch photos.
 
 When a project's diary is empty, the diary prompts the user to make the first
@@ -141,7 +163,7 @@ The shared page is read-only and shows only:
 - the project name and stitch count per row
 - stitch names, with no other stitch data and no stitch photos. Private stitches
   hold data copied from other websites, so only their names are public.
-- the colors
+- the colors, with their yarn links
 - the draw history, as a simple list of each draw's stitch, colors, and row
   count, without padding or the owner's controls
 - the progress photos from the diary, without the diary text
@@ -234,7 +256,9 @@ every stitch.
 
 ### Draw history
 
-The project lists its draws in order. For any draw, the user can:
+The project page shows the latest draw first and highlighted, since it's the
+one to crochet next, followed by earlier draws, newest first. For any draw, the
+user can:
 
 - **Delete it:** for draws the user rejected.
 - **Edit it:** change the stitch, colors, or row count by hand, for when the

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{% if form.instance.pk %}Edit project{% else %}New project{% endif %}{% endblock %}
+{% block content %}
+<h1>{% if form.instance.pk %}Edit {{ form.instance.name }}{% else %}New project{% endif %}</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {% for field in form %}
+    {% if field.name == "stitches" %}
+      {% include "planner/_stitch_picker.html" %}
+    {% elif field.name == "repeat_gap" %}
+      <div>{{ field.errors }}<label for="{{ field.id_for_label }}">Once a stitch or color is picked, skip it for the next {{ field }} draws.</label></div>
+    {% else %}
+      {{ field.as_field_group }}
+    {% endif %}
+    {% if field.name == "stitch_count" %}{% include "planner/_size_guide.html" %}{% endif %}
+  {% endfor %}
+  {% if colors %}
+  <fieldset>
+    <legend>Colors</legend>
+    {{ colors.management_form }}
+    {{ colors.non_form_errors }}
+    <div id="colors-rows">
+      {% for row in colors %}{% include "planner/_color_row.html" %}{% endfor %}
+    </div>
+    <template id="colors-empty">{% include "planner/_color_row.html" with row=colors.empty_form %}</template>
+    <button type="button" data-add-form="colors">Add another color</button>
+  </fieldset>
+  {% endif %}
+  {{ form.non_field_errors }}
+  <button>Save</button>
+</form>
+{% endblock %}

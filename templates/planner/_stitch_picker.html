@@ -1,0 +1,12 @@
+<fieldset>
+  <legend>{{ field.label }}</legend>
+  {{ field.errors }}
+  <input type="search" data-filter="stitch-choices" placeholder="Search stitches" aria-label="Search stitches">
+  <div id="stitch-choices" class="picker">
+    {% for choice in field %}
+    <label data-filter-item>{{ choice.tag }} {{ choice.choice_label }}</label>
+    {% empty %}
+    <p>No stitches to add.</p>
+    {% endfor %}
+  </div>
+</fieldset>

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Edit color{% endblock %}
+{% block content %}
+<h1>Edit color {{ saved_name }}</h1>
+<p>Draws that use this color keep it under its new name.</p>
+<form method="post">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {% for field in form %}{{ field.as_field_group }}{% endfor %}
+  <button>Save</button>
+</form>
+<p><a href="{% url 'project_detail' color.project_id %}">Back to project</a></p>
+{% endblock %}
