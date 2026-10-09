@@ -13,15 +13,15 @@ class UsageTests(TestCase):
         add_draw(self.project, "Moss", "blue", "red", rows=2)
         add_draw(self.project, "Single crochet", "blue", rows=4)
 
-    def test_stitch_usage_counts_draws_and_rows(self):
-        usage = {str(s): (s.draw_count, s.row_count) for s in self.project.stitch_usage()}
+    def test_stitch_usage_counts_draws(self):
+        usage = {str(s): s.draw_count for s in self.project.stitch_usage()}
 
-        self.assertEqual(usage, {"Moss": (1, 2), "Single crochet": (2, 7), "Unused": (0, 0)})
+        self.assertEqual(usage, {"Moss": 1, "Single crochet": 2, "Unused": 0})
 
     def test_color_usage_counts_both_colors_of_two_color_draws(self):
-        usage = {str(c): (c.draw_count, c.row_count) for c in self.project.color_usage()}
+        usage = {str(c): c.draw_count for c in self.project.color_usage()}
 
-        self.assertEqual(usage, {"blue": (2, 6), "cream": (0, 0), "red": (2, 5)})
+        self.assertEqual(usage, {"blue": 2, "cream": 0, "red": 2})
 
 
 class SharingTests(TestCase):

@@ -27,9 +27,9 @@
 <section>
   <h2>Stitches</h2>
   <div class="table-scroll"><table>
-    <tr><th>Stitch</th><th>Draws</th><th>Rows</th><th>Status</th><th></th></tr>
+    <tr><th>Stitch</th><th>Draws</th><th>Status</th><th></th></tr>
     {% for item in stitch_usage %}
-    <tr><td><a href="{% url 'stitch_detail' item.stitch_id %}">{{ item }}</a></td><td>{{ item.draw_count }}</td><td>{{ item.row_count }}</td><td>{{ item.active|yesno:"Active,Inactive" }}</td><td><form method="post" action="{% url 'project_stitch_toggle' item.pk %}" style="display:inline">{% csrf_token %}<button>{{ item.active|yesno:"Deactivate,Activate" }}</button></form>{% if not item.draw_count %} <form method="post" action="{% url 'project_stitch_remove' item.pk %}" style="display:inline">{% csrf_token %}<button>Remove</button></form>{% endif %}</td></tr>
+    <tr><td><a href="{% url 'stitch_detail' item.stitch_id %}">{{ item }}</a></td><td>{{ item.draw_count }}</td><td>{{ item.active|yesno:"Active,Inactive" }}</td><td><form method="post" action="{% url 'project_stitch_toggle' item.pk %}" style="display:inline">{% csrf_token %}<button>{{ item.active|yesno:"Deactivate,Activate" }}</button></form>{% if not item.draw_count %} <form method="post" action="{% url 'project_stitch_remove' item.pk %}" style="display:inline">{% csrf_token %}<button>Remove</button></form>{% endif %}</td></tr>
     {% endfor %}
   </table></div>
   <form method="post" action="{% url 'project_stitch_add' project.pk %}">
@@ -42,9 +42,9 @@
 <section>
   <h2>Colors</h2>
   <div class="table-scroll"><table>
-    <tr><th>Color</th><th>Draws</th><th>Rows</th><th>Status</th><th></th></tr>
+    <tr><th>Color</th><th>Draws</th><th>Status</th><th></th></tr>
     {% for item in color_usage %}
-    <tr><td>{{ item }}</td><td>{{ item.draw_count }}</td><td>{{ item.row_count }}</td><td>{{ item.active|yesno:"Active,Inactive" }}</td><td><form method="post" action="{% url 'project_color_toggle' item.pk %}" style="display:inline">{% csrf_token %}<button>{{ item.active|yesno:"Deactivate,Activate" }}</button></form>{% if not item.draw_count %} <form method="post" action="{% url 'project_color_remove' item.pk %}" style="display:inline">{% csrf_token %}<button>Remove</button></form>{% endif %}</td></tr>
+    <tr><td>{{ item }}</td><td>{{ item.draw_count }}</td><td>{{ item.active|yesno:"Active,Inactive" }}</td><td><form method="post" action="{% url 'project_color_toggle' item.pk %}" style="display:inline">{% csrf_token %}<button>{{ item.active|yesno:"Deactivate,Activate" }}</button></form>{% if not item.draw_count %} <form method="post" action="{% url 'project_color_remove' item.pk %}" style="display:inline">{% csrf_token %}<button>Remove</button></form>{% endif %}</td></tr>
     {% endfor %}
   </table></div>
   <form method="post" action="{% url 'project_color_add' project.pk %}">

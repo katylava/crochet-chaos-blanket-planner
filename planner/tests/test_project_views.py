@@ -122,9 +122,9 @@ class ProjectDetailTests(TestCase):
         self.assertContains(response, "150 stitches per row")
         shell_url = reverse("stitch_detail", args=[self.draw.stitch.stitch_id])
         self.assertContains(
-            response, f'<td><a href="{shell_url}">Shell</a></td><td>1</td><td>3</td>', html=True
+            response, f'<td><a href="{shell_url}">Shell</a></td><td>1</td>', html=True
         )
-        self.assertContains(response, "<td>red</td><td>1</td><td>3</td>", html=True)
+        self.assertContains(response, "<td>red</td><td>1</td>", html=True)
 
     def test_links_draw_actions(self):
         response = self.get()

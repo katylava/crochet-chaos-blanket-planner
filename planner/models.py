@@ -50,26 +50,22 @@ class Project(models.Model):
         self.save(update_fields=["is_shared", "share_token"])
 
     def stitch_usage(self):
-        """Return the project's stitches, each with draw_count and row_count set."""
+        """Return the project's stitches, each with draw_count set."""
         draws = list(self.draws.all())
         stitches = list(self.project_stitches.select_related("stitch"))
         for stitch in stitches:
-            used = [d for d in draws if d.stitch_id == stitch.id]
-            stitch.draw_count = len(used)
-            stitch.row_count = sum(d.rows for d in used)
+            stitch.draw_count = sum(1 for d in draws if d.stitch_id == stitch.id)
         return stitches
 
     def color_usage(self):
-        """Return the project's colors, each with draw_count and row_count set.
+        """Return the project's colors, each with draw_count set.
 
         Both colors of a two-color draw count.
         """
         draws = list(self.draws.all())
         colors = list(self.colors.all())
         for color in colors:
-            used = [d for d in draws if color.id in (d.color1_id, d.color2_id)]
-            color.draw_count = len(used)
-            color.row_count = sum(d.rows for d in used)
+            color.draw_count = sum(1 for d in draws if color.id in (d.color1_id, d.color2_id))
         return colors
 
 

@@ -120,8 +120,8 @@ draws keep them. The user can reactivate them.
 ### Usage counts
 
 The project shows, for each of its stitches and colors, the number of draws that
-used it and the total rows across those draws. Both colors of a two-color draw
-count. The counts help the user decide what to deactivate.
+used it. Both colors of a two-color draw count. The counts help the user decide
+what to deactivate. Row totals aren't shown.
 
 ### Diary
 
