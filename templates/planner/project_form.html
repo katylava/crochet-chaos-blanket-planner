@@ -4,7 +4,11 @@
 <h1>{% if form.instance.pk %}Edit {{ form.instance.name }}{% else %}New project{% endif %}</h1>
 <form method="post">
   {% csrf_token %}
-  {{ form.as_p }}
+  {{ form.non_field_errors }}
+  {% for field in form %}
+    {{ field.as_field_group }}
+    {% if field.name == "stitch_count" %}{% include "planner/_size_guide.html" %}{% endif %}
+  {% endfor %}
   {% if colors %}
   <fieldset>
     <legend>Colors</legend>
@@ -17,7 +21,7 @@
     <button type="button" data-add-form="colors">Add another color</button>
   </fieldset>
   {% endif %}
+  {{ form.non_field_errors }}
   <button>Save</button>
 </form>
-{% include "planner/_size_guide.html" %}
 {% endblock %}

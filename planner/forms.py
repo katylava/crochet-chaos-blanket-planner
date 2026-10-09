@@ -10,7 +10,8 @@ from stitches.widgets import NumericInputsMixin
 class ProjectSettingsForm(NumericInputsMixin, forms.ModelForm):
     class Meta:
         model = Project
-        fields = ["name", "stitch_count", "notes", "min_rows", "max_rows", "repeat_gap"]
+        fields = ["name", "stitch_count", "min_rows", "max_rows", "repeat_gap", "notes"]
+        widgets = {"notes": forms.Textarea(attrs={"rows": 3})}
 
     def clean(self):
         cleaned = super().clean()
@@ -64,13 +65,20 @@ class BaseNewColorFormSet(forms.BaseFormSet):
 NewColorFormSet = forms.formset_factory(NewColorForm, formset=BaseNewColorFormSet, extra=4)
 
 
+class StitchChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, stitch):
+        colors = "2 colors" if stitch.colors == 2 else "1 color"
+        return f"{stitch.name} (multiple of {stitch.multiple} + {stitch.edge_stitches}, {colors})"
+
+
 class ProjectCreateForm(ProjectSettingsForm):
-    stitches = forms.ModelMultipleChoiceField(
+    stitches = StitchChoiceField(
         queryset=Stitch.objects.none(), widget=forms.CheckboxSelectMultiple
     )
 
     def __init__(self, *args, user, colors, **kwargs):
         """`colors` is the NewColorFormSet posted with this form."""
+        kwargs.setdefault("initial", {"min_rows": 1, "max_rows": 4, "repeat_gap": 2})
         super().__init__(*args, **kwargs)
         self.fields["stitches"].queryset = Stitch.objects.visible_to(user)
         self.colors = colors

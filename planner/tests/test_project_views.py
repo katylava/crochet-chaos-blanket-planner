@@ -108,6 +108,29 @@ class ProjectCreateTests(TestCase):
         self.assertContains(response, "50 to 63")
         self.assertContains(response, "hook size")
 
+    def test_size_guide_follows_stitch_count_field(self):
+        html = self.client.get(reverse("project_create")).content.decode()
+
+        guide = html.index("Pick a number and embrace the chaos.")
+        self.assertLess(html.index('name="stitch_count"'), guide)
+        self.assertLess(guide, html.index('name="min_rows"'))
+
+    def test_new_project_starts_with_default_draw_settings(self):
+        form = self.client.get(reverse("project_create")).context["form"]
+
+        self.assertEqual(
+            (form["min_rows"].value(), form["max_rows"].value(), form["repeat_gap"].value()),
+            (1, 4, 2),
+        )
+
+    def test_stitch_choices_show_multiple_and_colors(self):
+        Stitch.objects.create(name="Moss", multiple=2, edge_stitches=1, colors=2, owner=self.alice)
+
+        response = self.client.get(reverse("project_create"))
+
+        self.assertContains(response, "Moss (multiple of 2 + 1, 2 colors)")
+        self.assertContains(response, "Single crochet (multiple of 1 + 0, 1 color)")
+
     def test_offers_only_visible_stitches(self):
         bob = User.objects.create_user("bob")
         Stitch.objects.create(name="Bob secret", multiple=1, owner=bob)

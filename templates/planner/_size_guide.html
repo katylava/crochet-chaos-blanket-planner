@@ -1,15 +1,15 @@
-<section>
-  <h2>Size guide</h2>
-  <p>{{ guide_text }}</p>
+<details open>
+  <summary><small>Size guide</small></summary>
+  <p><small>{{ guide_text }}</small></p>
   <div class="table-scroll"><table>
-    <tr><th>Size</th><th>Width (inches)</th><th>Stitch count</th><th></th></tr>
+    <tr><th>Size</th><th>Width</th><th>Stitch count</th></tr>
     {% for size in sizes %}
     <tr>
       <td>{{ size.name }}</td>
-      <td>{{ size.width }}</td>
+      <td>{{ size.width }} in</td>
       <td>{{ size.low }} to {{ size.high }}</td>
-      <td>{{ size.note }}</td>
     </tr>
+    {% if size.note %}<tr><td colspan="3"><small>{{ size.note }}</small></td></tr>{% endif %}
     {% endfor %}
   </table></div>
-</section>
+</details>
