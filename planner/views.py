@@ -10,6 +10,7 @@ from planner.forms import (
     ColorForm,
     DiaryEntryForm,
     DrawForm,
+    NewColorFormSet,
     ProjectCreateForm,
     ProjectEditForm,
 )
@@ -34,20 +35,23 @@ def project_list(request):
 
 @login_required
 def project_create(request):
-    form = ProjectCreateForm(request.POST or None, user=request.user)
-    if form.is_valid():
+    colors = NewColorFormSet(request.POST or None, prefix="colors")
+    form = ProjectCreateForm(request.POST or None, user=request.user, colors=colors)
+    # Validate both so errors show for the settings and the color rows together.
+    form_valid, colors_valid = form.is_valid(), colors.is_valid()
+    if form_valid and colors_valid:
         with transaction.atomic():
             form.instance.owner = request.user
             project = form.save()
             for stitch in form.cleaned_data["stitches"]:
                 ProjectStitch.objects.create(project=project, stitch=stitch)
-            for name in form.cleaned_data["colors"]:
-                ProjectColor.objects.create(project=project, name=name)
+            for name, yarn_url in colors.colors():
+                ProjectColor.objects.create(project=project, name=name, yarn_url=yarn_url)
         return redirect("project_detail", project.pk)
     return render(
         request,
         "planner/project_form.html",
-        {"form": form, "sizes": SIZES, "guide_text": GUIDE_TEXT},
+        {"form": form, "colors": colors, "sizes": SIZES, "guide_text": GUIDE_TEXT},
     )
 
 

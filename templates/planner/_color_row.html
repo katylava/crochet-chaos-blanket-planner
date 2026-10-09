@@ -1,0 +1,4 @@
+<div class="color-row">
+  <p>{{ row.name.errors }}<input type="text" name="{{ row.name.html_name }}" value="{{ row.name.value|default_if_none:'' }}" placeholder="Color name, like rust" aria-label="Color name" maxlength="100"></p>
+  <p>{{ row.yarn_url.errors }}<input type="url" name="{{ row.yarn_url.html_name }}" value="{{ row.yarn_url.value|default_if_none:'' }}" placeholder="Yarn link (optional)" aria-label="Yarn link"></p>
+</div>

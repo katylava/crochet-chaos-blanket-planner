@@ -1,10 +1,11 @@
-<!doctype html>
+{% load static %}<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Chaos Blanket Planner{% endblock %}</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.0.6/css/pico.classless.min.css">
+  <script src="{% static 'app.js' %}" defer></script>
   <style>
     /* Small buttons for the inline forms in table rows and the nav. */
     td form, nav form { display: inline; margin: 0; }
@@ -14,6 +15,8 @@
     .thumb { width: 80px; height: 80px; object-fit: cover; border-radius: var(--pico-border-radius); }
     .photo { display: block; width: 100%; max-width: 600px; height: auto; margin-bottom: 1rem; }
     svg.photo { max-width: 200px; }
+    .color-row { display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; }
+    .color-row p { margin: 0; }
     .messages li { color: var(--pico-del-color); list-style: none; }
   </style>
 </head>

@@ -5,6 +5,18 @@
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
+  {% if colors %}
+  <fieldset>
+    <legend>Colors</legend>
+    {{ colors.management_form }}
+    {{ colors.non_form_errors }}
+    <div id="colors-rows">
+      {% for row in colors %}{% include "planner/_color_row.html" %}{% endfor %}
+    </div>
+    <template id="colors-empty">{% include "planner/_color_row.html" with row=colors.empty_form %}</template>
+    <button type="button" data-add-form="colors">Add another color</button>
+  </fieldset>
+  {% endif %}
   <button>Save</button>
 </form>
 {% include "planner/_size_guide.html" %}

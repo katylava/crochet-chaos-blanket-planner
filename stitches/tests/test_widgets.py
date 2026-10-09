@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from planner.forms import DrawForm, ProjectCreateForm, ProjectEditForm
+from planner.forms import DrawForm, NewColorFormSet, ProjectCreateForm, ProjectEditForm
 from planner.tests.factories import add_draw, make_project
 from stitches.admin import StitchAdminForm
 from stitches.forms import StitchForm
@@ -24,6 +24,6 @@ class NumericInputTests(TestCase):
         self.assert_numeric(StitchForm(), "multiple", "edge_stitches")
         self.assert_numeric(StitchAdminForm(), "multiple", "edge_stitches")
         fields = ("stitch_count", "min_rows", "max_rows", "repeat_gap")
-        self.assert_numeric(ProjectCreateForm(user=user), *fields)
+        self.assert_numeric(ProjectCreateForm(user=user, colors=NewColorFormSet(prefix="colors")), *fields)
         self.assert_numeric(ProjectEditForm(instance=project), *fields)
         self.assert_numeric(DrawForm(instance=draw), "rows")

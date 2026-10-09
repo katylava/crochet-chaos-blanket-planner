@@ -33,7 +33,8 @@ class ProjectCreateTests(TestCase):
         self.sc = Stitch.objects.create(name="Single crochet", multiple=1, owner=self.alice)
         self.dc = Stitch.objects.create(name="Double crochet", multiple=1, owner=self.alice)
 
-    def post(self, **overrides):
+    def post(self, colors=(("rust", ""), ("cream", "")), **overrides):
+        """Post the form. `colors` is a list of (name, yarn link) rows."""
         data = {
             "name": "Rainbow",
             "stitch_count": 150,
@@ -42,8 +43,12 @@ class ProjectCreateTests(TestCase):
             "max_rows": 4,
             "repeat_gap": 1,
             "stitches": [self.sc.pk, self.dc.pk],
-            "colors": "rust\ncream\n",
+            "colors-TOTAL_FORMS": len(colors),
+            "colors-INITIAL_FORMS": 0,
         }
+        for i, (name, link) in enumerate(colors):
+            data[f"colors-{i}-name"] = name
+            data[f"colors-{i}-yarn_url"] = link
         data.update(overrides)
         return self.client.post(reverse("project_create"), data)
 
@@ -71,10 +76,29 @@ class ProjectCreateTests(TestCase):
 
         self.assertContains(response, "The maximum can&#x27;t be less than the minimum.")
 
-    def test_ignores_blank_and_repeated_color_lines(self):
-        self.post(colors="rust\n\n rust \ncream")
+    def test_saves_yarn_links_and_ignores_blank_rows(self):
+        self.post(colors=[("rust", "https://example.com/rust"), ("", ""), ("cream", "")])
 
-        self.assertEqual(Project.objects.get().colors.count(), 2)
+        colors = {c.name: c.yarn_url for c in Project.objects.get().colors.all()}
+        self.assertEqual(colors, {"rust": "https://example.com/rust", "cream": ""})
+
+    def test_rejects_repeated_color_names(self):
+        response = self.post(colors=[("rust", ""), (" rust ", ""), ("cream", "")])
+
+        self.assertContains(response, "rust is listed more than once.")
+        self.assertFalse(Project.objects.exists())
+
+    def test_rejects_yarn_link_without_name(self):
+        response = self.post(colors=[("rust", ""), ("cream", ""), ("", "https://example.com/x")])
+
+        self.assertContains(response, "Add a name for this color.")
+        self.assertFalse(Project.objects.exists())
+
+    def test_form_has_add_another_color_button(self):
+        response = self.client.get(reverse("project_create"))
+
+        self.assertContains(response, "Add another color")
+        self.assertContains(response, 'name="colors-TOTAL_FORMS"')
 
     def test_form_shows_size_guide_and_hook_hint(self):
         response = self.client.get(reverse("project_create"))

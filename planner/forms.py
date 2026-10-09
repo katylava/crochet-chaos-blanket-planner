@@ -7,16 +7,6 @@ from stitches.models import Stitch
 from stitches.widgets import NumericInputsMixin
 
 
-def parse_colors(text):
-    """Return color names from text with one name per line, without blanks or repeats."""
-    names = []
-    for line in text.splitlines():
-        name = line.strip()
-        if name and name not in names:
-            names.append(name)
-    return names
-
-
 class ProjectSettingsForm(NumericInputsMixin, forms.ModelForm):
     class Meta:
         model = Project
@@ -40,29 +30,57 @@ class ProjectEditForm(ProjectSettingsForm):
         return cleaned
 
 
+class NewColorForm(forms.Form):
+    name = forms.CharField(max_length=100, required=False)
+    yarn_url = forms.URLField(label="Yarn link", required=False)
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get("yarn_url") and not cleaned.get("name"):
+            self.add_error("name", "Add a name for this color.")
+        return cleaned
+
+
+class BaseNewColorFormSet(forms.BaseFormSet):
+    """Color rows on the new-project form. Rows without a name are ignored."""
+
+    def clean(self):
+        if any(self.errors):
+            return
+        names = [name for name, _ in self.colors()]
+        for name in names:
+            if names.count(name) > 1:
+                raise forms.ValidationError(f"{name} is listed more than once.")
+
+    def colors(self):
+        """Return (name, yarn link) for each filled-in row."""
+        return [
+            (form.cleaned_data["name"], form.cleaned_data["yarn_url"])
+            for form in self.forms
+            if form.cleaned_data.get("name")
+        ]
+
+
+NewColorFormSet = forms.formset_factory(NewColorForm, formset=BaseNewColorFormSet, extra=4)
+
+
 class ProjectCreateForm(ProjectSettingsForm):
     stitches = forms.ModelMultipleChoiceField(
         queryset=Stitch.objects.none(), widget=forms.CheckboxSelectMultiple
     )
-    colors = forms.CharField(
-        widget=forms.Textarea(attrs={"rows": 6}),
-        help_text='One color name per line, for example "rust" or "cream".',
-    )
 
-    def __init__(self, *args, user, **kwargs):
+    def __init__(self, *args, user, colors, **kwargs):
+        """`colors` is the NewColorFormSet posted with this form."""
         super().__init__(*args, **kwargs)
         self.fields["stitches"].queryset = Stitch.objects.visible_to(user)
-
-    def clean_colors(self):
-        return parse_colors(self.cleaned_data["colors"])
+        self.colors = colors
 
     def clean(self):
         cleaned = super().clean()
         n = cleaned.get("repeat_gap")
         stitches = cleaned.get("stitches")
-        colors = cleaned.get("colors")
-        if n is not None and stitches is not None and colors is not None:
-            for error in fit_errors(n, list(stitches), len(colors)):
+        if n is not None and stitches is not None and self.colors.is_valid():
+            for error in fit_errors(n, list(stitches), len(self.colors.colors())):
                 self.add_error(None, error)
         return cleaned
 

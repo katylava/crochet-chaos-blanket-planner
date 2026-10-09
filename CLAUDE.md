@@ -18,7 +18,9 @@ truth for behavior. Read it before changing features.
 ## Stack
 
 - Django with server-rendered templates, SQLite, and Django's auth and admin.
-- No JavaScript frontend framework.
+- No JavaScript frontend framework. Plain JavaScript is fine where it helps. It
+  lives in `static/app.js`, loaded by `templates/base.html`. Keep pages usable
+  without it: forms still submit and links still work.
 - Styling is Pico's classless stylesheet from the jsdelivr CDN, pinned to an
   exact version in `templates/base.html`, plus a small `<style>` block there.
   Keep the UI basic, but not unstyled.
