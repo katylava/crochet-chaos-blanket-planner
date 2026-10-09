@@ -47,3 +47,17 @@ class SharingTests(TestCase):
         project.refresh_from_db()
         self.assertFalse(project.is_shared)
         self.assertIsNotNone(project.share_token)
+
+
+class PaddingTextTests(TestCase):
+    def test_padding_of_one_goes_at_start_only(self):
+        project = make_project(stitches=[("Moss", 2, 0, 1)], stitch_count=151)
+
+        draw = add_draw(project, "Moss", "red")
+
+        self.assertEqual(draw.padding_text, "1 at the start")
+
+
+class ProjectStrTests(TestCase):
+    def test_str_is_name(self):
+        self.assertEqual(str(make_project(name="Rainbow")), "Rainbow")

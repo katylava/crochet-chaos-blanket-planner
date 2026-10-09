@@ -117,6 +117,21 @@ class Draw(models.Model):
     class Meta:
         ordering = ["id"]
 
+    @property
+    def colors_text(self):
+        if self.color2:
+            return f"{self.color1} and {self.color2}"
+        return str(self.color1)
+
+    @property
+    def padding_text(self):
+        start, end = self.stitch.stitch.padding(self.project.stitch_count)
+        if start == 0:
+            return "No padding"
+        if end == 0:
+            return f"{start} at the start"
+        return f"{start} at the start, {end} at the end"
+
 
 class DiaryEntry(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="diary_entries")

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Edit draw{% endblock %}
+{% block content %}
+<h1>Edit draw in {{ draw.project.name }}</h1>
+<p>Manual edits aren't checked against the repeat rule.</p>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button>Save</button>
+</form>
+<p><a href="{% url 'project_detail' draw.project_id %}">Back to project</a></p>
+{% endblock %}

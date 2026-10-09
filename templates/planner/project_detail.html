@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ project.name }}{% endblock %}
+{% block content %}
+<h1>{{ project.name }}</h1>
+
+<section>
+  <h2>Draws</h2>
+  <form method="post" action="{% url 'draw_create' project.pk %}">{% csrf_token %}<button>Draw</button></form>
+  <table>
+    <tr><th>#</th><th>Stitch</th><th>Colors</th><th>Rows</th><th>Padding</th></tr>
+    {% for draw in draws %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ draw.stitch }}</td>
+      <td>{{ draw.colors_text }}</td>
+      <td>{{ draw.rows }}</td>
+      <td>{{ draw.padding_text }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">No draws yet.</td></tr>
+    {% endfor %}
+  </table>
+</section>
+{% endblock %}

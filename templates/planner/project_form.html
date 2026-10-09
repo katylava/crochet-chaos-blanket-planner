@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{% if form.instance.pk %}Edit project{% else %}New project{% endif %}{% endblock %}
+{% block content %}
+<h1>{% if form.instance.pk %}Edit {{ form.instance.name }}{% else %}New project{% endif %}</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button>Save</button>
+</form>
+{% include "planner/_size_guide.html" %}
+{% endblock %}
