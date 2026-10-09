@@ -129,6 +129,14 @@ class ProjectCreateTests(TestCase):
         self.assertLess(html.index('name="stitch_count"'), guide)
         self.assertLess(guide, html.index('name="min_rows"'))
 
+    def test_skip_field_reads_as_a_sentence(self):
+        html = self.client.get(reverse("project_create")).content.decode()
+
+        sentence = html.index("Once a stitch or color is picked, skip it for the next")
+        field = html.index('name="repeat_gap"')
+        self.assertLess(sentence, field)
+        self.assertLess(field, html.index("draws.", field))
+
     def test_new_project_starts_with_default_draw_settings(self):
         form = self.client.get(reverse("project_create")).context["form"]
 
@@ -198,13 +206,21 @@ class ProjectDetailTests(TestCase):
         self.assertContains(response, "5 mm hook")
         self.assertContains(response, "150 stitches per row")
         self.assertContains(response, "1 to 4 rows per draw")
-        self.assertContains(response, "No stitch or color repeats within 2 draws")
+        self.assertContains(response, "Once a stitch or color is picked, it's skipped for the next 2 draws.")
         self.assertNotContains(response, "N =")
 
-    def test_zero_gap_says_repeats_are_allowed(self):
+    def test_zero_gap_says_nothing_is_skipped(self):
         response = self.get()
 
-        self.assertContains(response, "Stitches and colors can repeat in back-to-back draws")
+        self.assertContains(response, "Stitches and colors can be picked again right away.")
+
+    def test_one_draw_is_singular(self):
+        self.project.repeat_gap = 1
+        self.project.save()
+
+        response = self.get()
+
+        self.assertContains(response, "it's skipped for the next draw.")
 
     def test_draw_button_comes_before_stitch_and_color_management(self):
         html = self.get().content.decode()

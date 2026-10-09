@@ -106,7 +106,9 @@ A project holds:
 - notes: optional free text about the project. The form's help text suggests
   recording the hook size, so the crocheter doesn't forget which hook they used.
 - the minimum and maximum rows per draw
-- `N`, the number of draws before a drawn stitch or color can be drawn again
+- `N`: once a stitch or color is picked, it's skipped for the next `N` draws. The
+  app words it this way, not as a "repeat" setting, since nothing is ever forced
+  to repeat.
 - the draw history
 
 Don't add a row-repeat field to stitches or round drawn row counts. The

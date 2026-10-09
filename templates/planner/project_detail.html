@@ -5,7 +5,7 @@
 <p>
   {{ project.stitch_count }} stitches per row ·
   {{ project.min_rows }} to {{ project.max_rows }} rows per draw ·
-  {% if project.repeat_gap %}No stitch or color repeats within {{ project.repeat_gap }} draw{{ project.repeat_gap|pluralize }}{% else %}Stitches and colors can repeat in back-to-back draws{% endif %}
+  {% if not project.repeat_gap %}Stitches and colors can be picked again right away.{% elif project.repeat_gap == 1 %}Once a stitch or color is picked, it's skipped for the next draw.{% else %}Once a stitch or color is picked, it's skipped for the next {{ project.repeat_gap }} draws.{% endif %}
 </p>
 {% if project.notes %}<p><small>{{ project.notes|linebreaksbr }}</small></p>{% endif %}
 <p><a href="{% url 'diary' project.pk %}">Diary</a> · <a href="{% url 'project_edit' project.pk %}">Edit settings</a></p>

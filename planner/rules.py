@@ -9,26 +9,28 @@ class DrawError(Exception):
     pass
 
 
+def next_draws(n):
+    """Return "the next draw" or "the next N draws"."""
+    return "the next draw" if n == 1 else f"the next {n} draws"
+
+
 def fit_errors(n, stitches, color_count):
-    """Return messages saying why N, the draws before a repeat, doesn't fit."""
+    """Return messages saying why N, the number of draws to skip, doesn't fit."""
     errors = []
     if len(stitches) <= n:
         errors.append(
-            f"Too few stitches: with {n} draws before a repeat, "
-            f"the project needs at least {n + 1} active stitches."
+            f"Too few stitches: skipping each picked stitch for {next_draws(n)} "
+            f"needs at least {n + 1} active stitches."
         )
+    skipping = f"skipping each picked color for {next_draws(n)}"
     if any(stitch.colors == 2 for stitch in stitches):
         # The last N draws can block up to 2N colors, and the next draw can need 2 more.
         colors_needed = 2 * n + 2
-        condition = f"{n} draws before a repeat and a two-color stitch"
+        skipping += ", with a two-color stitch,"
     else:
         colors_needed = n + 1
-        condition = f"{n} draws before a repeat"
     if color_count < colors_needed:
-        errors.append(
-            f"Too few colors: with {condition}, "
-            f"the project needs at least {colors_needed} active colors."
-        )
+        errors.append(f"Too few colors: {skipping} needs at least {colors_needed} active colors.")
     return errors
 
 

@@ -29,13 +29,8 @@ class Project(models.Model):
     )
     min_rows = models.PositiveIntegerField("minimum rows per draw", validators=[MinValueValidator(1)])
     max_rows = models.PositiveIntegerField("maximum rows per draw", validators=[MinValueValidator(1)])
-    repeat_gap = models.PositiveIntegerField(
-        "draws before a repeat",
-        help_text=(
-            "A stitch or color used in any of this many latest draws can't be drawn. "
-            "0 allows back-to-back repeats."
-        ),
-    )
+    # The form shows this as "Once a stitch or color is picked, skip it for the next N draws."
+    repeat_gap = models.PositiveIntegerField("draws to skip a picked stitch or color")
     share_token = models.CharField(max_length=10, unique=True, null=True, blank=True, editable=False)
     is_shared = models.BooleanField(default=False)
 

@@ -6,7 +6,13 @@
   {% csrf_token %}
   {{ form.non_field_errors }}
   {% for field in form %}
-    {% if field.name == "stitches" %}{% include "planner/_stitch_picker.html" %}{% else %}{{ field.as_field_group }}{% endif %}
+    {% if field.name == "stitches" %}
+      {% include "planner/_stitch_picker.html" %}
+    {% elif field.name == "repeat_gap" %}
+      <div>{{ field.errors }}<label for="{{ field.id_for_label }}">Once a stitch or color is picked, skip it for the next {{ field }} draws.</label></div>
+    {% else %}
+      {{ field.as_field_group }}
+    {% endif %}
     {% if field.name == "stitch_count" %}{% include "planner/_size_guide.html" %}{% endif %}
   {% endfor %}
   {% if colors %}
